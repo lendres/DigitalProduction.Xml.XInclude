@@ -11,6 +11,7 @@
 		<PackageProjectUrl>https://github.com/lendres/XInclude-Dot-Net</PackageProjectUrl>
 		<PackageTags>XInclude;XPointer;XML,C#,.Net</PackageTags>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<Authors>Oleg Tkachenko, et al.</Authors>
 	</PropertyGroup>
 
 	<!-- Import version information from the folder containing the project if the file exists -->
