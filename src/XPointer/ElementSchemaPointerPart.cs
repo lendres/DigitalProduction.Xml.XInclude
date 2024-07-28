@@ -33,7 +33,7 @@ internal class ElementSchemaPointerPart : PointerPart
 		return doc.SelectNodes(this._xpath, nm);
 	}
 
-	public static ElementSchemaPointerPart ParseSchemaData(XPointerLexer lexer)
+	public static ElementSchemaPointerPart? ParseSchemaData(XPointerLexer lexer)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 		ElementSchemaPointerPart schemaData = new ElementSchemaPointerPart();
@@ -53,12 +53,12 @@ internal class ElementSchemaPointerPart : PointerPart
 			if (lexer.Kind != XPointerLexer.LexKind.Number)
 			{
 				Console.Error.WriteLine("Syntax error in element() schema data: Invalid token in ChildSequence");
-				return (ElementSchemaPointerPart)null;
+				return null;
 			}
 			if (lexer.Number == 0)
 			{
 				Console.Error.WriteLine("Syntax error in element() schema data: 0 index ChildSequence");
-				return (ElementSchemaPointerPart)null;
+				return null;
 			}
 			schemaData.ChildSequence.Add((object)lexer.Number);
 			stringBuilder.Append("/*[");
@@ -69,12 +69,12 @@ internal class ElementSchemaPointerPart : PointerPart
 		if (lexer.Kind != XPointerLexer.LexKind.RRBracket)
 		{
 			Console.Error.WriteLine("Syntax error in element() schema data: Invalid token in ChildSequence");
-			return (ElementSchemaPointerPart)null;
+			return null;
 		}
 		if (schemaData.NCName == null && schemaData.ChildSequence.Count == 0)
 		{
 			Console.Error.WriteLine("Syntax error in element() schema data: empty XPointer");
-			return (ElementSchemaPointerPart)null;
+			return null;
 		}
 		schemaData.XPath = stringBuilder.ToString();
 		return schemaData;

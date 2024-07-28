@@ -63,22 +63,22 @@ public class XPointerReader : XmlReader
 
 	public override string GetAttribute(int i) => this._reader.GetAttribute(i);
 
-	public override string GetAttribute(string name) => this._reader.GetAttribute(name);
+	public override string? GetAttribute(string name) => this._reader.GetAttribute(name);
 
-	public override string GetAttribute(string name, string namespaceURI)
+	public override string? GetAttribute(string name, string? namespaceURI)
 	{
 		return this._reader.GetAttribute(name, namespaceURI);
 	}
 
 	public override bool IsEmptyElement => this._reader.IsEmptyElement;
 
-	public override string LookupNamespace(string prefix) => this._reader.LookupNamespace(prefix);
+	public override string? LookupNamespace(string prefix) => this._reader.LookupNamespace(prefix);
 
 	public override void MoveToAttribute(int i) => this._reader.MoveToAttribute(i);
 
 	public override bool MoveToAttribute(string name) => this._reader.MoveToAttribute(name);
 
-	public override bool MoveToAttribute(string name, string ns)
+	public override bool MoveToAttribute(string name, string? ns)
 	{
 		return this._reader.MoveToAttribute(name, ns);
 	}
@@ -95,7 +95,7 @@ public class XPointerReader : XmlReader
 
 	public override string this[int i] => this._reader[i];
 
-	public override string this[string name] => this._reader[name];
+	public override string? this[string name] => this._reader[name];
 
 	public override string this[string name, string namespaceURI]
 	{

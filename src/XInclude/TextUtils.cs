@@ -1,12 +1,11 @@
-namespace GotDotNet.XInclude {
-    using System;    
-    
-	/// <summary>
-	/// Text inclusion related utility methods.	
-	/// </summary>
-	/// <author>Oleg Tkachenko, oleg@tkachenko.com</author>
-	internal class TextUtils {
-	            
+namespace GotDotNet.XInclude;
+
+/// <summary>
+/// Text inclusion related utility methods.	
+/// </summary>
+/// <author>Oleg Tkachenko, oleg@tkachenko.com</author>
+internal class TextUtils {
+            
         /// <summary>
         /// Checks string for a presense of characters, 
         /// not permitted in XML 1.0 documents.
@@ -37,5 +36,4 @@ namespace GotDotNet.XInclude {
                 throw new NonXmlCharacterException(str[i]);
             }
         }
-	}
 }
