@@ -1,118 +1,196 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: GotDotNet.XPointer.LexUtils
-// Assembly: XInclude, Version=1.0.5338.18190, Culture=neutral, PublicKeyToken=b0a92c4c738ff598
-// MVID: A508C8EB-5BD8-4635-B171-E7AA907C25ED
-// Assembly location: R:\Programming\XInclude Decompile\XInclude.dll
-
-#nullable disable
-namespace GotDotNet.XPointer
+﻿namespace GotDotNet.XPointer
 {
 	internal class LexUtils
 	{
+		#region private members
+
 		private const int FSTARTNAME = 1;
 		private const int FNAME = 2;
-		private const string _NameChars = "-.0:AZ__az··ÀÖØöøıĴľŁňŊžƀǃǍǰǴǵǺȗɐʨʻˁːˑ̀͠͡ͅΆΊΌΌΎΡΣώϐϖϚϚϜϜϞϞϠϠϢϳЁЌЎяёќўҁ҃҆ҐӄӇӈӋӌӐӫӮӵӸӹԱՖՙՙաֆֹֻֽֿֿׁׂ֑֣֡ׄׄאתװײءغـْ٠٩ٰڷںھۀێېۓە۪ۭۨ۰۹ँःअह़्॑॔क़ॣ०९ঁঃঅঌএঐওনপরললশহ়়াৄেৈো্ৗৗড়ঢ়য়ৣ০ৱਂਂਅਊਏਐਓਨਪਰਲਲ਼ਵਸ਼ਸਹ਼਼ਾੂੇੈੋ੍ਖ਼ੜਫ਼ਫ਼੦ੴઁઃઅઋઍઍએઑઓનપરલળવહ઼ૅેૉો્ૠૠ૦૯ଁଃଅଌଏଐଓନପରଲଳଶହ଼ୃେୈୋ୍ୖୗଡ଼ଢ଼ୟୡ୦୯ஂஃஅஊஎஐஒகஙசஜஜஞடணதநபமவஷஹாூெைொ்ௗௗ௧௯ఁఃఅఌఎఐఒనపళవహాౄెైొ్ౕౖౠౡ౦౯ಂಃಅಌಎಐಒನಪಳವಹಾೄೆೈೊ್ೕೖೞೞೠೡ೦೯ംഃഅഌഎഐഒനപഹാൃെൈൊ്ൗൗൠൡ൦൯กฮะฺเ๎๐๙ກຂຄຄງຈຊຊຍຍດທນຟມຣລລວວສຫອຮະູົຽເໄໆໆ່ໍ໐໙༘༙༠༩༹༹༵༵༷༷༾ཇཉཀྵ྄ཱ྆ྋྐྕྗྗྙྭྱྷྐྵྐྵႠჅაჶᄀᄀᄂᄃᄅᄇᄉᄉᄋᄌᄎᄒᄼᄼᄾᄾᅀᅀᅌᅌᅎᅎᅐᅐᅔᅕᅙᅙᅟᅡᅣᅣᅥᅥᅧᅧᅩᅩᅭᅮᅲᅳᅵᅵᆞᆞᆨᆨᆫᆫᆮᆯᆷᆸᆺᆺᆼᇂᇫᇫᇰᇰᇹᇹḀẛẠỹἀἕἘἝἠὅὈὍὐὗὙὙὛὛὝὝὟώᾀᾴᾶᾼιιῂῄῆῌῐΐῖΊῠῬῲῴῶῼ⃐⃜⃡⃡ΩΩKÅ℮℮ↀↂ々々〇〇〡〯〱〵ぁゔ゙゚ゝゞァヺーヾㄅㄬ一龥가힣";
-		private static string _NameChars2 = bytearray {2D 00 2E 00 30 00 3A 00 41 00 5A 00 5F 00 5F 00   // -...0.:.A.Z._._.
-															 61 00 7A 00 B7 00 B7 00 C0 00 D6 00 D8 00 F6 00   // a.z.............
-															 F8 00 31 01 34 01 3E 01 41 01 48 01 4A 01 7E 01   // ..1.4.>.A.H.J.~.
-															 80 01 C3 01 CD 01 F0 01 F4 01 F5 01 FA 01 17 02
-															 50 02 A8 02 BB 02 C1 02 D0 02 D1 02 00 03 45 03   // P.............E.
-															 60 03 61 03 86 03 8A 03 8C 03 8C 03 8E 03 A1 03   // `.a.............
-															 A3 03 CE 03 D0 03 D6 03 DA 03 DA 03 DC 03 DC 03
-															 DE 03 DE 03 E0 03 E0 03 E2 03 F3 03 01 04 0C 04
-															 0E 04 4F 04 51 04 5C 04 5E 04 81 04 83 04 86 04   // ..O.Q.\.^.......
-															 90 04 C4 04 C7 04 C8 04 CB 04 CC 04 D0 04 EB 04
-															 EE 04 F5 04 F8 04 F9 04 31 05 56 05 59 05 59 05   // ........1.V.Y.Y.
-															 61 05 86 05 91 05 A1 05 A3 05 B9 05 BB 05 BD 05   // a...............
-															 BF 05 BF 05 C1 05 C2 05 C4 05 C4 05 D0 05 EA 05
-															 F0 05 F2 05 21 06 3A 06 40 06 52 06 60 06 69 06   // ....!.:.@.R.`.i.
-															 70 06 B7 06 BA 06 BE 06 C0 06 CE 06 D0 06 D3 06   // p...............
-															 D5 06 E8 06 EA 06 ED 06 F0 06 F9 06 01 09 03 09
-															 05 09 39 09 3C 09 4D 09 51 09 54 09 58 09 63 09   // ..9.<.M.Q.T.X.c.
-															 66 09 6F 09 81 09 83 09 85 09 8C 09 8F 09 90 09   // f.o.............
-															 93 09 A8 09 AA 09 B0 09 B2 09 B2 09 B6 09 B9 09
-															 BC 09 BC 09 BE 09 C4 09 C7 09 C8 09 CB 09 CD 09
-															 D7 09 D7 09 DC 09 DD 09 DF 09 E3 09 E6 09 F1 09
-															 02 0A 02 0A 05 0A 0A 0A 0F 0A 10 0A 13 0A 28 0A   // ..............(.
-															 2A 0A 30 0A 32 0A 33 0A 35 0A 36 0A 38 0A 39 0A   // *.0.2.3.5.6.8.9.
-															 3C 0A 3C 0A 3E 0A 42 0A 47 0A 48 0A 4B 0A 4D 0A   // <.<.>.B.G.H.K.M.
-															 59 0A 5C 0A 5E 0A 5E 0A 66 0A 74 0A 81 0A 83 0A   // Y.\.^.^.f.t.....
-															 85 0A 8B 0A 8D 0A 8D 0A 8F 0A 91 0A 93 0A A8 0A
-															 AA 0A B0 0A B2 0A B3 0A B5 0A B9 0A BC 0A C5 0A
-															 C7 0A C9 0A CB 0A CD 0A E0 0A E0 0A E6 0A EF 0A
-															 01 0B 03 0B 05 0B 0C 0B 0F 0B 10 0B 13 0B 28 0B   // ..............(.
-															 2A 0B 30 0B 32 0B 33 0B 36 0B 39 0B 3C 0B 43 0B   // *.0.2.3.6.9.<.C.
-															 47 0B 48 0B 4B 0B 4D 0B 56 0B 57 0B 5C 0B 5D 0B   // G.H.K.M.V.W.\.].
-															 5F 0B 61 0B 66 0B 6F 0B 82 0B 83 0B 85 0B 8A 0B   // _.a.f.o.........
-															 8E 0B 90 0B 92 0B 95 0B 99 0B 9A 0B 9C 0B 9C 0B
-															 9E 0B 9F 0B A3 0B A4 0B A8 0B AA 0B AE 0B B5 0B
-															 B7 0B B9 0B BE 0B C2 0B C6 0B C8 0B CA 0B CD 0B
-															 D7 0B D7 0B E7 0B EF 0B 01 0C 03 0C 05 0C 0C 0C
-															 0E 0C 10 0C 12 0C 28 0C 2A 0C 33 0C 35 0C 39 0C   // ......(.*.3.5.9.
-															 3E 0C 44 0C 46 0C 48 0C 4A 0C 4D 0C 55 0C 56 0C   // >.D.F.H.J.M.U.V.
-															 60 0C 61 0C 66 0C 6F 0C 82 0C 83 0C 85 0C 8C 0C   // `.a.f.o.........
-															 8E 0C 90 0C 92 0C A8 0C AA 0C B3 0C B5 0C B9 0C
-															 BE 0C C4 0C C6 0C C8 0C CA 0C CD 0C D5 0C D6 0C
-															 DE 0C DE 0C E0 0C E1 0C E6 0C EF 0C 02 0D 03 0D
-															 05 0D 0C 0D 0E 0D 10 0D 12 0D 28 0D 2A 0D 39 0D   // ..........(.*.9.
-															 3E 0D 43 0D 46 0D 48 0D 4A 0D 4D 0D 57 0D 57 0D   // >.C.F.H.J.M.W.W.
-															 60 0D 61 0D 66 0D 6F 0D 01 0E 2E 0E 30 0E 3A 0E   // `.a.f.o.....0.:.
-															 40 0E 4E 0E 50 0E 59 0E 81 0E 82 0E 84 0E 84 0E   // @.N.P.Y.........
-															 87 0E 88 0E 8A 0E 8A 0E 8D 0E 8D 0E 94 0E 97 0E
-															 99 0E 9F 0E A1 0E A3 0E A5 0E A5 0E A7 0E A7 0E
-															 AA 0E AB 0E AD 0E AE 0E B0 0E B9 0E BB 0E BD 0E
-															 C0 0E C4 0E C6 0E C6 0E C8 0E CD 0E D0 0E D9 0E
-															 18 0F 19 0F 20 0F 29 0F 35 0F 35 0F 37 0F 37 0F   // .... .).5.5.7.7.
-															 39 0F 39 0F 3E 0F 47 0F 49 0F 69 0F 71 0F 84 0F   // 9.9.>.G.I.i.q...
-															 86 0F 8B 0F 90 0F 95 0F 97 0F 97 0F 99 0F AD 0F
-															 B1 0F B7 0F B9 0F B9 0F A0 10 C5 10 D0 10 F6 10
-															 00 11 00 11 02 11 03 11 05 11 07 11 09 11 09 11
-															 0B 11 0C 11 0E 11 12 11 3C 11 3C 11 3E 11 3E 11   // ........<.<.>.>.
-															 40 11 40 11 4C 11 4C 11 4E 11 4E 11 50 11 50 11   // @.@.L.L.N.N.P.P.
-															 54 11 55 11 59 11 59 11 5F 11 61 11 63 11 63 11   // T.U.Y.Y._.a.c.c.
-															 65 11 65 11 67 11 67 11 69 11 69 11 6D 11 6E 11   // e.e.g.g.i.i.m.n.
-															 72 11 73 11 75 11 75 11 9E 11 9E 11 A8 11 A8 11   // r.s.u.u.........
-															 AB 11 AB 11 AE 11 AF 11 B7 11 B8 11 BA 11 BA 11
-															 BC 11 C2 11 EB 11 EB 11 F0 11 F0 11 F9 11 F9 11
-															 00 1E 9B 1E A0 1E F9 1E 00 1F 15 1F 18 1F 1D 1F
-															 20 1F 45 1F 48 1F 4D 1F 50 1F 57 1F 59 1F 59 1F   //  .E.H.M.P.W.Y.Y.
-															 5B 1F 5B 1F 5D 1F 5D 1F 5F 1F 7D 1F 80 1F B4 1F   // [.[.].]._.}.....
-															 B6 1F BC 1F BE 1F BE 1F C2 1F C4 1F C6 1F CC 1F
-															 D0 1F D3 1F D6 1F DB 1F E0 1F EC 1F F2 1F F4 1F
-															 F6 1F FC 1F D0 20 DC 20 E1 20 E1 20 26 21 26 21   // ..... . . . &!&!
-															 2A 21 2B 21 2E 21 2E 21 80 21 82 21 05 30 05 30   // *!+!.!.!.!.!.0.0
-															 07 30 07 30 21 30 2F 30 31 30 35 30 41 30 94 30   // .0.0!0/01050A0.0
-															 99 30 9A 30 9D 30 9E 30 A1 30 FA 30 FC 30 FE 30   // .0.0.0.0.0.0.0.0
-															 05 31 2C 31 00 4E A5 9F 00 AC A3 D7 }             // .1,1.N......
 
-		private const string _NameStartChars = "::AZ__azÀÖØöøıĴľŁňŊžƀǃǍǰǴǵǺȗɐʨʻˁΆΆΈΊΌΌΎΡΣώϐϖϚϚϜϜϞϞϠϠϢϳЁЌЎяёќўҁҐӄӇӈӋӌӐӫӮӵӸӹԱՖՙՙաֆאתװײءغفيٱڷںھۀێېۓەەۥۦअहऽऽक़ॡঅঌএঐওনপরললশহড়ঢ়য়ৡৰৱਅਊਏਐਓਨਪਰਲਲ਼ਵਸ਼ਸਹਖ਼ੜਫ਼ਫ਼ੲੴઅઋઍઍએઑઓનપરલળવહઽઽૠૠଅଌଏଐଓନପରଲଳଶହଽଽଡ଼ଢ଼ୟୡஅஊஎஐஒகஙசஜஜஞடணதநபமவஷஹఅఌఎఐఒనపళవహౠౡಅಌಎಐಒನಪಳವಹೞೞೠೡഅഌഎഐഒനപഹൠൡกฮะะาำเๅກຂຄຄງຈຊຊຍຍດທນຟມຣລລວວສຫອຮະະາຳຽຽເໄཀཇཉཀྵႠჅაჶᄀᄀᄂᄃᄅᄇᄉᄉᄋᄌᄎᄒᄼᄼᄾᄾᅀᅀᅌᅌᅎᅎᅐᅐᅔᅕᅙᅙᅟᅡᅣᅣᅥᅥᅧᅧᅩᅩᅭᅮᅲᅳᅵᅵᆞᆞᆨᆨᆫᆫᆮᆯᆷᆸᆺᆺᆼᇂᇫᇫᇰᇰᇹᇹḀẛẠỹἀἕἘἝἠὅὈὍὐὗὙὙὛὛὝὝὟώᾀᾴᾶᾼιιῂῄῆῌῐΐῖΊῠῬῲῴῶῼΩΩKÅ℮℮ↀↂ〇〇〡〩ぁゔァヺㄅㄬ一龥가힣";
-    
-	private static byte[] _chars = new byte[65536];
+		private const string _NameChars =
+		"\u002d\u002e\u0030\u003a\u0041\u005a\u005f\u005f" +
+		"\u0061\u007a\u00b7\u00b7\u00c0\u00d6\u00d8\u00f6" +
+		"\u00f8\u0131\u0134\u013e\u0141\u0148\u014a\u017e" +
+		"\u0180\u01c3\u01cd\u01f0\u01f4\u01f5\u01fa\u0217" +
+		"\u0250\u02a8\u02bb\u02c1\u02d0\u02d1\u0300\u0345" +
+		"\u0360\u0361\u0386\u038a\u038c\u038c\u038e\u03a1" +
+		"\u03a3\u03ce\u03d0\u03d6\u03da\u03da\u03dc\u03dc" +
+		"\u03de\u03de\u03e0\u03e0\u03e2\u03f3\u0401\u040c" +
+		"\u040e\u044f\u0451\u045c\u045e\u0481\u0483\u0486" +
+		"\u0490\u04c4\u04c7\u04c8\u04cb\u04cc\u04d0\u04eb" +
+		"\u04ee\u04f5\u04f8\u04f9\u0531\u0556\u0559\u0559" +
+		"\u0561\u0586\u0591\u05a1\u05a3\u05b9\u05bb\u05bd" +
+		"\u05bf\u05bf\u05c1\u05c2\u05c4\u05c4\u05d0\u05ea" +
+		"\u05f0\u05f2\u0621\u063a\u0640\u0652\u0660\u0669" +
+		"\u0670\u06b7\u06ba\u06be\u06c0\u06ce\u06d0\u06d3" +
+		"\u06d5\u06e8\u06ea\u06ed\u06f0\u06f9\u0901\u0903" +
+		"\u0905\u0939\u093c\u094d\u0951\u0954\u0958\u0963" +
+		"\u0966\u096f\u0981\u0983\u0985\u098c\u098f\u0990" +
+		"\u0993\u09a8\u09aa\u09b0\u09b2\u09b2\u09b6\u09b9" +
+		"\u09bc\u09bc\u09be\u09c4\u09c7\u09c8\u09cb\u09cd" +
+		"\u09d7\u09d7\u09dc\u09dd\u09df\u09e3\u09e6\u09f1" +
+		"\u0a02\u0a02\u0a05\u0a0a\u0a0f\u0a10\u0a13\u0a28" +
+		"\u0a2a\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39" +
+		"\u0a3c\u0a3c\u0a3e\u0a42\u0a47\u0a48\u0a4b\u0a4d" +
+		"\u0a59\u0a5c\u0a5e\u0a5e\u0a66\u0a74\u0a81\u0a83" +
+		"\u0a85\u0a8b\u0a8d\u0a8d\u0a8f\u0a91\u0a93\u0aa8" +
+		"\u0aaa\u0ab0\u0ab2\u0ab3\u0ab5\u0ab9\u0abc\u0ac5" +
+		"\u0ac7\u0ac9\u0acb\u0acd\u0ae0\u0ae0\u0ae6\u0aef" +
+		"\u0b01\u0b03\u0b05\u0b0c\u0b0f\u0b10\u0b13\u0b28" +
+		"\u0b2a\u0b30\u0b32\u0b33\u0b36\u0b39\u0b3c\u0b43" +
+		"\u0b47\u0b48\u0b4b\u0b4d\u0b56\u0b57\u0b5c\u0b5d" +
+		"\u0b5f\u0b61\u0b66\u0b6f\u0b82\u0b83\u0b85\u0b8a" +
+		"\u0b8e\u0b90\u0b92\u0b95\u0b99\u0b9a\u0b9c\u0b9c" +
+		"\u0b9e\u0b9f\u0ba3\u0ba4\u0ba8\u0baa\u0bae\u0bb5" +
+		"\u0bb7\u0bb9\u0bbe\u0bc2\u0bc6\u0bc8\u0bca\u0bcd" +
+		"\u0bd7\u0bd7\u0be7\u0bef\u0c01\u0c03\u0c05\u0c0c" +
+		"\u0c0e\u0c10\u0c12\u0c28\u0c2a\u0c33\u0c35\u0c39" +
+		"\u0c3e\u0c44\u0c46\u0c48\u0c4a\u0c4d\u0c55\u0c56" +
+		"\u0c60\u0c61\u0c66\u0c6f\u0c82\u0c83\u0c85\u0c8c" +
+		"\u0c8e\u0c90\u0c92\u0ca8\u0caa\u0cb3\u0cb5\u0cb9" +
+		"\u0cbe\u0cc4\u0cc6\u0cc8\u0cca\u0ccd\u0cd5\u0cd6" +
+		"\u0cde\u0cde\u0ce0\u0ce1\u0ce6\u0cef\u0d02\u0d03" +
+		"\u0d05\u0d0c\u0d0e\u0d10\u0d12\u0d28\u0d2a\u0d39" +
+		"\u0d3e\u0d43\u0d46\u0d48\u0d4a\u0d4d\u0d57\u0d57" +
+		"\u0d60\u0d61\u0d66\u0d6f\u0e01\u0e2e\u0e30\u0e3a" +
+		"\u0e40\u0e4e\u0e50\u0e59\u0e81\u0e82\u0e84\u0e84" +
+		"\u0e87\u0e88\u0e8a\u0e8a\u0e8d\u0e8d\u0e94\u0e97" +
+		"\u0e99\u0e9f\u0ea1\u0ea3\u0ea5\u0ea5\u0ea7\u0ea7" +
+		"\u0eaa\u0eab\u0ead\u0eae\u0eb0\u0eb9\u0ebb\u0ebd" +
+		"\u0ec0\u0ec4\u0ec6\u0ec6\u0ec8\u0ecd\u0ed0\u0ed9" +
+		"\u0f18\u0f19\u0f20\u0f29\u0f35\u0f35\u0f37\u0f37" +
+		"\u0f39\u0f39\u0f3e\u0f47\u0f49\u0f69\u0f71\u0f84" +
+		"\u0f86\u0f8b\u0f90\u0f95\u0f97\u0f97\u0f99\u0fad" +
+		"\u0fb1\u0fb7\u0fb9\u0fb9\u10a0\u10c5\u10d0\u10f6" +
+		"\u1100\u1100\u1102\u1103\u1105\u1107\u1109\u1109" +
+		"\u110b\u110c\u110e\u1112\u113c\u113c\u113e\u113e" +
+		"\u1140\u1140\u114c\u114c\u114e\u114e\u1150\u1150" +
+		"\u1154\u1155\u1159\u1159\u115f\u1161\u1163\u1163" +
+		"\u1165\u1165\u1167\u1167\u1169\u1169\u116d\u116e" +
+		"\u1172\u1173\u1175\u1175\u119e\u119e\u11a8\u11a8" +
+		"\u11ab\u11ab\u11ae\u11af\u11b7\u11b8\u11ba\u11ba" +
+		"\u11bc\u11c2\u11eb\u11eb\u11f0\u11f0\u11f9\u11f9" +
+		"\u1e00\u1e9b\u1ea0\u1ef9\u1f00\u1f15\u1f18\u1f1d" +
+		"\u1f20\u1f45\u1f48\u1f4d\u1f50\u1f57\u1f59\u1f59" +
+		"\u1f5b\u1f5b\u1f5d\u1f5d\u1f5f\u1f7d\u1f80\u1fb4" +
+		"\u1fb6\u1fbc\u1fbe\u1fbe\u1fc2\u1fc4\u1fc6\u1fcc" +
+		"\u1fd0\u1fd3\u1fd6\u1fdb\u1fe0\u1fec\u1ff2\u1ff4" +
+		"\u1ff6\u1ffc\u20d0\u20dc\u20e1\u20e1\u2126\u2126" +
+		"\u212a\u212b\u212e\u212e\u2180\u2182\u3005\u3005" +
+		"\u3007\u3007\u3021\u302f\u3031\u3035\u3041\u3094" +
+		"\u3099\u309a\u309d\u309e\u30a1\u30fa\u30fc\u30fe" +
+		"\u3105\u312c\u4e00\u9fa5\uac00\ud7a3";
 
-    public static bool IsWhitespace(char ch) => ch <= ' ' && (4294981120L >> (int) ch & 1L) != 0L;
+		private const string _NameStartChars =
+		"\u003a\u003a\u0041\u005a\u005f\u005f\u0061\u007a" +
+		"\u00c0\u00d6\u00d8\u00f6\u00f8\u0131\u0134\u013e" +
+		"\u0141\u0148\u014a\u017e\u0180\u01c3\u01cd\u01f0" +
+		"\u01f4\u01f5\u01fa\u0217\u0250\u02a8\u02bb\u02c1" +
+		"\u0386\u0386\u0388\u038a\u038c\u038c\u038e\u03a1" +
+		"\u03a3\u03ce\u03d0\u03d6\u03da\u03da\u03dc\u03dc" +
+		"\u03de\u03de\u03e0\u03e0\u03e2\u03f3\u0401\u040c" +
+		"\u040e\u044f\u0451\u045c\u045e\u0481\u0490\u04c4" +
+		"\u04c7\u04c8\u04cb\u04cc\u04d0\u04eb\u04ee\u04f5" +
+		"\u04f8\u04f9\u0531\u0556\u0559\u0559\u0561\u0586" +
+		"\u05d0\u05ea\u05f0\u05f2\u0621\u063a\u0641\u064a" +
+		"\u0671\u06b7\u06ba\u06be\u06c0\u06ce\u06d0\u06d3" +
+		"\u06d5\u06d5\u06e5\u06e6\u0905\u0939\u093d\u093d" +
+		"\u0958\u0961\u0985\u098c\u098f\u0990\u0993\u09a8" +
+		"\u09aa\u09b0\u09b2\u09b2\u09b6\u09b9\u09dc\u09dd" +
+		"\u09df\u09e1\u09f0\u09f1\u0a05\u0a0a\u0a0f\u0a10" +
+		"\u0a13\u0a28\u0a2a\u0a30\u0a32\u0a33\u0a35\u0a36" +
+		"\u0a38\u0a39\u0a59\u0a5c\u0a5e\u0a5e\u0a72\u0a74" +
+		"\u0a85\u0a8b\u0a8d\u0a8d\u0a8f\u0a91\u0a93\u0aa8" +
+		"\u0aaa\u0ab0\u0ab2\u0ab3\u0ab5\u0ab9\u0abd\u0abd" +
+		"\u0ae0\u0ae0\u0b05\u0b0c\u0b0f\u0b10\u0b13\u0b28" +
+		"\u0b2a\u0b30\u0b32\u0b33\u0b36\u0b39\u0b3d\u0b3d" +
+		"\u0b5c\u0b5d\u0b5f\u0b61\u0b85\u0b8a\u0b8e\u0b90" +
+		"\u0b92\u0b95\u0b99\u0b9a\u0b9c\u0b9c\u0b9e\u0b9f" +
+		"\u0ba3\u0ba4\u0ba8\u0baa\u0bae\u0bb5\u0bb7\u0bb9" +
+		"\u0c05\u0c0c\u0c0e\u0c10\u0c12\u0c28\u0c2a\u0c33" +
+		"\u0c35\u0c39\u0c60\u0c61\u0c85\u0c8c\u0c8e\u0c90" +
+		"\u0c92\u0ca8\u0caa\u0cb3\u0cb5\u0cb9\u0cde\u0cde" +
+		"\u0ce0\u0ce1\u0d05\u0d0c\u0d0e\u0d10\u0d12\u0d28" +
+		"\u0d2a\u0d39\u0d60\u0d61\u0e01\u0e2e\u0e30\u0e30" +
+		"\u0e32\u0e33\u0e40\u0e45\u0e81\u0e82\u0e84\u0e84" +
+		"\u0e87\u0e88\u0e8a\u0e8a\u0e8d\u0e8d\u0e94\u0e97" +
+		"\u0e99\u0e9f\u0ea1\u0ea3\u0ea5\u0ea5\u0ea7\u0ea7" +
+		"\u0eaa\u0eab\u0ead\u0eae\u0eb0\u0eb0\u0eb2\u0eb3" +
+		"\u0ebd\u0ebd\u0ec0\u0ec4\u0f40\u0f47\u0f49\u0f69" +
+		"\u10a0\u10c5\u10d0\u10f6\u1100\u1100\u1102\u1103" +
+		"\u1105\u1107\u1109\u1109\u110b\u110c\u110e\u1112" +
+		"\u113c\u113c\u113e\u113e\u1140\u1140\u114c\u114c" +
+		"\u114e\u114e\u1150\u1150\u1154\u1155\u1159\u1159" +
+		"\u115f\u1161\u1163\u1163\u1165\u1165\u1167\u1167" +
+		"\u1169\u1169\u116d\u116e\u1172\u1173\u1175\u1175" +
+		"\u119e\u119e\u11a8\u11a8\u11ab\u11ab\u11ae\u11af" +
+		"\u11b7\u11b8\u11ba\u11ba\u11bc\u11c2\u11eb\u11eb" +
+		"\u11f0\u11f0\u11f9\u11f9\u1e00\u1e9b\u1ea0\u1ef9" +
+		"\u1f00\u1f15\u1f18\u1f1d\u1f20\u1f45\u1f48\u1f4d" +
+		"\u1f50\u1f57\u1f59\u1f59\u1f5b\u1f5b\u1f5d\u1f5d" +
+		"\u1f5f\u1f7d\u1f80\u1fb4\u1fb6\u1fbc\u1fbe\u1fbe" +
+		"\u1fc2\u1fc4\u1fc6\u1fcc\u1fd0\u1fd3\u1fd6\u1fdb" +
+		"\u1fe0\u1fec\u1ff2\u1ff4\u1ff6\u1ffc\u2126\u2126" +
+		"\u212a\u212b\u212e\u212e\u2180\u2182\u3007\u3007" +
+		"\u3021\u3029\u3041\u3094\u30a1\u30fa\u3105\u312c" +
+		"\u4e00\u9fa5\uac00\ud7a3";
 
-    static LexUtils()
-    {
-      LexUtils.SetChars("::AZ__azÀÖØöøıĴľŁňŊžƀǃǍǰǴǵǺȗɐʨʻˁΆΆΈΊΌΌΎΡΣώϐϖϚϚϜϜϞϞϠϠϢϳЁЌЎяёќўҁҐӄӇӈӋӌӐӫӮӵӸӹԱՖՙՙաֆאתװײءغفيٱڷںھۀێېۓەەۥۦअहऽऽक़ॡঅঌএঐওনপরললশহড়ঢ়য়ৡৰৱਅਊਏਐਓਨਪਰਲਲ਼ਵਸ਼ਸਹਖ਼ੜਫ਼ਫ਼ੲੴઅઋઍઍએઑઓનપરલળવહઽઽૠૠଅଌଏଐଓନପରଲଳଶହଽଽଡ଼ଢ଼ୟୡஅஊஎஐஒகஙசஜஜஞடணதநபமவஷஹఅఌఎఐఒనపళవహౠౡಅಌಎಐಒನಪಳವಹೞೞೠೡഅഌഎഐഒനപഹൠൡกฮะะาำเๅກຂຄຄງຈຊຊຍຍດທນຟມຣລລວວສຫອຮະະາຳຽຽເໄཀཇཉཀྵႠჅაჶᄀᄀᄂᄃᄅᄇᄉᄉᄋᄌᄎᄒᄼᄼᄾᄾᅀᅀᅌᅌᅎᅎᅐᅐᅔᅕᅙᅙᅟᅡᅣᅣᅥᅥᅧᅧᅩᅩᅭᅮᅲᅳᅵᅵᆞᆞᆨᆨᆫᆫᆮᆯᆷᆸᆺᆺᆼᇂᇫᇫᇰᇰᇹᇹḀẛẠỹἀἕἘἝἠὅὈὍὐὗὙὙὛὛὝὝὟώᾀᾴᾶᾼιιῂῄῆῌῐΐῖΊῠῬῲῴῶῼΩΩKÅ℮℮ↀↂ〇〇〡〩ぁゔァヺㄅㄬ一龥가힣", (byte) 1);
-      LexUtils.SetChars("-.0:AZ__az··ÀÖØöøıĴľŁňŊžƀǃǍǰǴǵǺȗɐʨʻˁːˑ̀͠͡ͅΆΊΌΌΎΡΣώϐϖϚϚϜϜϞϞϠϠϢϳЁЌЎяёќўҁ҃҆ҐӄӇӈӋӌӐӫӮӵӸӹԱՖՙՙաֆֹֻֽֿֿׁׂ֑֣֡ׄׄאתװײءغـْ٠٩ٰڷںھۀێېۓە۪ۭۨ۰۹ँःअह़्॑॔क़ॣ०९ঁঃঅঌএঐওনপরললশহ়়াৄেৈো্ৗৗড়ঢ়য়ৣ০ৱਂਂਅਊਏਐਓਨਪਰਲਲ਼ਵਸ਼ਸਹ਼਼ਾੂੇੈੋ੍ਖ਼ੜਫ਼ਫ਼੦ੴઁઃઅઋઍઍએઑઓનપરલળવહ઼ૅેૉો્ૠૠ૦૯ଁଃଅଌଏଐଓନପରଲଳଶହ଼ୃେୈୋ୍ୖୗଡ଼ଢ଼ୟୡ୦୯ஂஃஅஊஎஐஒகஙசஜஜஞடணதநபமவஷஹாூெைொ்ௗௗ௧௯ఁఃఅఌఎఐఒనపళవహాౄెైొ్ౕౖౠౡ౦౯ಂಃಅಌಎಐಒನಪಳವಹಾೄೆೈೊ್ೕೖೞೞೠೡ೦೯ംഃഅഌഎഐഒനപഹാൃെൈൊ്ൗൗൠൡ൦൯กฮะฺเ๎๐๙ກຂຄຄງຈຊຊຍຍດທນຟມຣລລວວສຫອຮະູົຽເໄໆໆ່ໍ໐໙༘༙༠༩༹༹༵༵༷༷༾ཇཉཀྵ྄ཱ྆ྋྐྕྗྗྙྭྱྷྐྵྐྵႠჅაჶᄀᄀᄂᄃᄅᄇᄉᄉᄋᄌᄎᄒᄼᄼᄾᄾᅀᅀᅌᅌᅎᅎᅐᅐᅔᅕᅙᅙᅟᅡᅣᅣᅥᅥᅧᅧᅩᅩᅭᅮᅲᅳᅵᅵᆞᆞᆨᆨᆫᆫᆮᆯᆷᆸᆺᆺᆼᇂᇫᇫᇰᇰᇹᇹḀẛẠỹἀἕἘἝἠὅὈὍὐὗὙὙὛὛὝὝὟώᾀᾴᾶᾼιιῂῄῆῌῐΐῖΊῠῬῲῴῶῼ⃐⃜⃡⃡ΩΩKÅ℮℮ↀↂ々々〇〇〡〯〱〵ぁゔ゙゚ゝゞァヺーヾㄅㄬ一龥가힣", (byte) 2);
-    }
+		private static byte[] _chars;
 
-    private static void SetChars(string ranges, byte value)
-    {
-      for (int index = 0; index < ranges.Length; index += 2)
-      {
-        int range1 = (int) ranges[index];
-        for (int range2 = (int) ranges[index + 1]; range1 <= range2; ++range1)
-          LexUtils._chars[range1] |= value;
-      }
-    }
+		static LexUtils()
+		{
+			_chars = new byte[65536];
+			SetChars(_NameStartChars, FSTARTNAME);
+			SetChars(_NameChars, FNAME);
+		}
 
-    public static bool IsStartNameChar(char ch) => ((int) LexUtils._chars[(int) ch] & 1) != 0;
+		private static void SetChars(string ranges, byte value)
+		{
+			for (int p = 0; p < ranges.Length; p += 2)
+			{
+				for (int i = ranges[p], last = ranges[p + 1]; i <= last; i++)
+					_chars[i] |= value;
+			}
+		}
 
-    public static bool IsStartNCNameChar(char ch) => LexUtils.IsStartNameChar(ch) && ch != ':';
+		#endregion
 
-    public static bool IsNameChar(char ch) => ((int) LexUtils._chars[(int) ch] & 2) != 0;
+		#region public members
 
-    public static bool IsNCNameChar(char ch) => LexUtils.IsNameChar(ch) && ch != ':';
-  }
+		/// <summary>
+		/// Checks if given character is XML 1.0 whitespace character.
+		/// </summary>        
+		public static bool IsWhitespace(char ch)
+		{
+			return (ch <= 0x0020) &&
+				(((((1L << 0x0009) |
+				(1L << 0x000A) |
+				(1L << 0x000C) |
+				(1L << 0x000D) |
+				(1L << 0x0020)) >> ch) & 1L) != 0);
+		}
+
+
+		public static bool IsStartNameChar(char ch)
+		{
+			return (_chars[ch] & FSTARTNAME) != 0;
+		}
+
+		public static bool IsStartNCNameChar(char ch)
+		{
+			return IsStartNameChar(ch) && ch != ':';
+		}
+
+		public static bool IsNameChar(char ch)
+		{
+			return (_chars[ch] & FNAME) != 0;
+		}
+
+		public static bool IsNCNameChar(char ch)
+		{
+			return IsNameChar(ch) && ch != ':';
+		}
+
+		#endregion
+	}
 }
