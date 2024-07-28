@@ -2,11 +2,15 @@
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<RootNamespace>XInclude_Dot_Net</RootNamespace>
+		<RootNamespace>GotDotNet</RootNamespace>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Company />
+		<PackageProjectUrl>https://github.com/lendres/XInclude-Dot-Net</PackageProjectUrl>
+		<PackageTags>XInclude;XPointer;XML,C#,.Net</PackageTags>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	</PropertyGroup>
 
 	<!-- Import version information from the folder containing the project if the file exists -->
@@ -14,6 +18,10 @@
 	<Import Project="$(MSBuildProjectDirectory)/Version.props" Condition="Exists('$(MSBuildProjectDirectory)/Version.props')" />
 
 	<ItemGroup>
+		<None Include="..\LICENSE">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
 		<None Include="..\README.md">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
