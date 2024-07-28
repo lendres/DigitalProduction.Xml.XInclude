@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project>
+	<PropertyGroup>
+		<Product>XInclude Dot Net</Product>
+		<Copyright>Oleg Tkachenko, et al.</Copyright>
+		<Company></Company>
+		<Description>XInclude implementation (based on the Candidate Recommendation) written in C# for the .NET platform.</Description>
+	</PropertyGroup>
+</Project>
