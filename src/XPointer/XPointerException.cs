@@ -1,4 +1,4 @@
-﻿namespace GotDotNet.XPointer;
+﻿namespace DigitalProduction.Xml.XPointer;
 
 public abstract class XPointerException : ApplicationException
 {

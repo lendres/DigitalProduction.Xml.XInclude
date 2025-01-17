@@ -2,7 +2,7 @@ using System.Net;
 using System.Text;
 using System.Xml;
 
-namespace GotDotNet.XInclude;
+namespace DigitalProduction.Xml.XInclude;
 
 /// <summary>
 /// Custom <c>XmlReader</c>, handler for parse="text" case.	

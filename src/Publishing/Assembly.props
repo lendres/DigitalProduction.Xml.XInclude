@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project>
 	<PropertyGroup>
-		<Title>XInclude Dot Net</Title>
-		<Product>XInclude Dot Net</Product>
+		<Title>DigitalProduction.Xml.XInclude</Title>
+		<Product>DigitalProduction.Xml.XInclude</Product>
 		<Copyright>Oleg Tkachenko, et al., Lance A. Endres</Copyright>
 		<Company></Company>
-		<Description>XInclude implementation (based on the Candidate Recommendation) written in C# for the .NET platform.</Description>
+		<Description>XML including reader.  Reads XML files included by a parent to create an instance of a single XML document.  XInclude and XPointer implementation (based on the Candidate Recommendation) written in C# for the .NET platform.</Description>
 	</PropertyGroup>
 </Project>

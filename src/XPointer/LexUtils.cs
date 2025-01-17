@@ -1,4 +1,4 @@
-﻿namespace GotDotNet.XPointer;
+﻿namespace DigitalProduction.Xml.XPointer;
 
 internal class LexUtils
 {

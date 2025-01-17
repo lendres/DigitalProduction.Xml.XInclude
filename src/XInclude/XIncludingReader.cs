@@ -1,10 +1,10 @@
-using GotDotNet.XPointer;
+using DigitalProduction.Xml.XPointer;
 using System.Collections;
 using System.Net;
 using System.Security;
 using System.Xml;
 
-namespace GotDotNet.XInclude;
+namespace DigitalProduction.Xml.XInclude;
 /*
 Open Issues:
 o Depth on included items?

@@ -1,4 +1,4 @@
-namespace GotDotNet.XInclude;
+namespace DigitalProduction.Xml.XInclude;
 
 /// <summary>
 /// Generic XInclude exception.	

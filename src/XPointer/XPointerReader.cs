@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Xml;
 
-namespace GotDotNet.XPointer;
+namespace DigitalProduction.Xml.XPointer;
 
 public class XPointerReader : XmlReader
 {

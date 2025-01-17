@@ -1,6 +1,6 @@
 ﻿using System.Xml;
 
-namespace GotDotNet.XPointer;
+namespace DigitalProduction.Xml.XPointer;
 
 public abstract class Pointer
 {

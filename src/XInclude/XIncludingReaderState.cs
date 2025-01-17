@@ -1,4 +1,4 @@
-namespace GotDotNet.XInclude;
+namespace DigitalProduction.Xml.XInclude;
 
 /// <summary>
 /// XIncludingReader state machine.    
