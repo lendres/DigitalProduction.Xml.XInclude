@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<airline
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:xi="http://www.w3.org/2001/XInclude"
+	name="Oceanic"
+	numberofplanes="10">
+	<xi:include href="employees.xml"/>
+	<xi:include href="assests.xml"/>
+</airline>

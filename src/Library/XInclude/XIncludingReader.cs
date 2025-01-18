@@ -671,7 +671,7 @@ public class XIncludingReader : XmlReader
 
 	#endregion
 
-	#region Private methods
+	#region Private Methods
 
 	private bool IsIncludeElement()
 	{
@@ -709,10 +709,10 @@ public class XIncludingReader : XmlReader
 
 	internal static Stream GetResource(string href, Uri includeLocation, string accept, string acceptCharset, string acceptLanguage, out WebResponse response)
 	{
-		WebRequest wReq;
+		WebRequest webRequest;
 		try
 		{
-			wReq = WebRequest.Create(includeLocation);
+			webRequest = WebRequest.Create(includeLocation);
 		}
 		catch (NotSupportedException nse)
 		{
@@ -723,47 +723,46 @@ public class XIncludingReader : XmlReader
 			throw new ResourceException("Security exception while fetching '" + href + "'", se);
 		}
 		// Add accept headers if this is HTTP request.
-		HttpWebRequest httpReq = (HttpWebRequest)wReq;
-		if (httpReq != null)
+		if (webRequest is HttpWebRequest httpWebRequest)
 		{
 			if (accept != null)
 			{
-				if (httpReq.Accept == null || httpReq.Accept == String.Empty)
+				if (httpWebRequest.Accept == null || httpWebRequest.Accept == String.Empty)
 				{
-					httpReq.Accept = accept;
+					httpWebRequest.Accept = accept;
 				}
 				else
 				{
-					httpReq.Accept += "," + accept;
+					httpWebRequest.Accept += "," + accept;
 				}
 			}
 			if (acceptCharset != null)
 			{
-				if (httpReq.Headers["Accept-Charset"] == null)
+				if (httpWebRequest.Headers["Accept-Charset"] == null)
 				{
-					httpReq.Headers.Add("Accept-Charset", acceptCharset);
+					httpWebRequest.Headers.Add("Accept-Charset", acceptCharset);
 				}
 				else
 				{
-					httpReq.Headers["Accept-Charset"] += ","+acceptCharset;
+					httpWebRequest.Headers["Accept-Charset"] += ","+acceptCharset;
 				}
 			}
 			if (acceptLanguage != null)
 			{
-				httpReq.Headers.Add("Accept-Language", "ru");
-				if (httpReq.Headers["Accept-Language"] == null)
+				httpWebRequest.Headers.Add("Accept-Language", "ru");
+				if (httpWebRequest.Headers["Accept-Language"] == null)
 				{
-					httpReq.Headers.Add("Accept-Language", acceptLanguage);
+					httpWebRequest.Headers.Add("Accept-Language", acceptLanguage);
 				}
 				else
 				{
-					httpReq.Headers["Accept-Language"] += ","+acceptLanguage;
+					httpWebRequest.Headers["Accept-Language"] += ","+acceptLanguage;
 				}
 			}
 		}
 		try
 		{
-			response = wReq.GetResponse();
+			response = webRequest.GetResponse();
 		}
 		catch (WebException we)
 		{
@@ -777,13 +776,13 @@ public class XIncludingReader : XmlReader
 	/// </summary>		
 	private bool ProcessIncludeElement()
 	{
-		string href = _reader.GetAttribute(_keywords.Href) ?? string.Empty;
-		string? xpointer = _reader.GetAttribute(_keywords.Xpointer);
+		string	href		= _reader.GetAttribute(_keywords.Href) ?? string.Empty;
+		string?	xpointer	= _reader.GetAttribute(_keywords.Xpointer);
 		if (href == null)
 		{
 			if (xpointer == null)
 			{
-				//Both href and xpointer attributes are absent, critical error
+				// Both href and xpointer attributes are absent, critical error.
 				if (_reader is XmlTextReader r)
 				{
 					throw new MissingHrefAndXpointerException("'href' or 'xpointer' attribute is required on xi:include element. "
@@ -796,26 +795,26 @@ public class XIncludingReader : XmlReader
 			}
 			else
 			{
-				//No href - intra-document reference
+				// No href - intra-document reference.
 				throw new NotImplementedException("Intra-document references are not implemented yet!");
 			}
 		}
 		string? parse = _reader.GetAttribute(_keywords.Parse);
 		if (parse == null || parse.Equals(_keywords.Xml))
 		{
-			//Include document as XML                                
+			// Include document as XML.                                .
 			Uri includeLocation = ResolveHref(href);
 			if (_xmlResolver == null)
 			{
-				//No custom resolver
+				// No custom resolver.
 				Stream stream =  GetResource(href, includeLocation,
 					_reader.GetAttribute(_keywords.Accept) ?? string.Empty,
 					_reader.GetAttribute(_keywords.AcceptCharset) ?? string.Empty,
 					_reader.GetAttribute(_keywords.AcceptLanguage) ?? string.Empty,
 					out WebResponse wRes);
-				//Push new base URI to the stack
+				// Push new base URI to the stack.
 				_baseURIs.Push(includeLocation);
-				//Push current reader to the stack
+				// Push current reader to the stack.
 				_readers.Push(_reader);
 				if (xpointer != null)
 				{
@@ -836,7 +835,7 @@ public class XIncludingReader : XmlReader
 			}
 			else
 			{
-				//Custom resolver provided, let's ask him
+				// Custom resolver provided, let's ask him.
 				object? resource;
 				try
 				{
@@ -850,7 +849,7 @@ public class XIncludingReader : XmlReader
 				{
 					throw new ResourceException("Custom XmlResolver returned null");
 				}
-				//Ok, we accept Stream and XmlReader only
+				// Ok, we accept Stream and XmlReader only.
 				XmlReader r;
 				if (resource is Stream stream)
 				{
@@ -862,29 +861,33 @@ public class XIncludingReader : XmlReader
 				}
 				else
 				{
-					//Unsupported type
+					// Unsupported type.
 					throw new ResourceException("Custom XmlResolver returned object of unsupported type.");
 				}
-				//Push new base URI to the stack
+				// Push new base URI to the stack.
 				_baseURIs.Push(includeLocation);
-				//Push current reader to the stack
+				// Push current reader to the stack.
 				_readers.Push(_reader);
 				if (xpointer != null)
+				{
 					_reader = new XPointerReader(r, _nameTable, xpointer);
+				}
 				else
+				{
 					_reader = r;
+				}
 				bool res = Read();
 				return res;
 			}
 		}
 		else if (parse.Equals(_keywords.Text))
 		{
-			//Include document as text                            
+			// Include document as text.
 			string encoding = GetAttribute(_keywords.Encoding) ?? string.Empty;
 			Uri includeLocation = ResolveHref(href);
-			//Push new base URI to the stack
+			// Push new base URI to the stack.
 			_baseURIs.Push(includeLocation);
-			//Push current reader to the stack
+			// Push current reader to the stack.
 			_readers.Push(_reader);
 			_reader = new TextIncludingReader(
 				includeLocation, encoding,
@@ -896,7 +899,7 @@ public class XIncludingReader : XmlReader
 		}
 		else
 		{
-			//Unknown "parse" attribute value, critical error
+			// Unknown "parse" attribute value, critical error.
 			if (_reader is XmlTextReader r)
 			{
 				throw new UnknownParseAttributeValueException(parse, _reader.BaseURI.ToString(), r.LineNumber, r.LinePosition);
@@ -919,9 +922,13 @@ public class XIncludingReader : XmlReader
 		try
 		{
 			if (_xmlResolver == null)
+			{
 				includeLocation = new Uri(new Uri(_reader.BaseURI), href);
+			}
 			else
+			{
 				includeLocation = _xmlResolver.ResolveUri(new Uri(_reader.BaseURI), href);
+			}
 		}
 		catch (UriFormatException ufe)
 		{
@@ -931,7 +938,7 @@ public class XIncludingReader : XmlReader
 		{
 			throw new ResourceException("Unable to resolve URI reference '" + href + "'", e);
 		}
-		//Check circular inclusion
+		// Check circular inclusion.
 		if (_baseURIs.Contains(includeLocation))
 		{
 			if (_reader is XmlTextReader reader)
