@@ -169,20 +169,20 @@ internal class TextIncludingReader : XmlReader
 				*/
 				try
 				{
-					//TODO: try to get "content-encoding" from wRes.Headers collection?
-					//If mime type is xml-aware, get resource encoding as per XML 1.0
+					// TODO: try to get "content-encoding" from wRes.Headers collection?
+					// If mime type is xml-aware, get resource encoding as per XML 1.0.
 					string contentType = wRes.ContentType.ToLower();
 					if (contentType == "text/xml" ||
 						contentType == "application/xml" ||
 						contentType.StartsWith("text/") && contentType.EndsWith("+xml") ||
 						contentType.StartsWith("application/") && contentType.EndsWith("+xml"))
 					{
-						//Yes, that's xml, let's read encoding from the xml declaration                    
+						// Yes, that's xml, let's read encoding from the xml declaration.                    
 						reader = new StreamReader(stream, GetEncodingFromXMLDecl(_href));
 					}
 					else if (_encoding != null)
 					{
-						//Try to use user-specified encoding
+						// Try to use user-specified encoding.
 						Encoding enc;
 						try
 						{
@@ -196,7 +196,7 @@ internal class TextIncludingReader : XmlReader
 					}
 					else
 					{
-						//Fallback to UTF-8
+						// Fallback to UTF-8.
 						reader = new StreamReader(stream, Encoding.UTF8);
 					}
 					_value = reader.ReadToEnd();
@@ -208,7 +208,7 @@ internal class TextIncludingReader : XmlReader
 				}
 				catch (OutOfMemoryException oome)
 				{
-					//Crazy include - memory is out - what about reading by chunks?
+					// Crazy include - memory is out - what about reading by chunks?
 					throw new ResourceException("Out of memory while reading resource '" + _href + "'", oome);
 				}
 				catch (IOException ioe)
@@ -218,7 +218,7 @@ internal class TextIncludingReader : XmlReader
 				_state = ReadState.Interactive;
 				return true;
 			case ReadState.Interactive:
-				//No more input
+				// No more input.
 				_state = ReadState.EndOfFile;
 				return false;
 			default:
@@ -258,15 +258,15 @@ internal class TextIncludingReader : XmlReader
 					}
 					else
 					{
-						//No encoding in XML declaration - UTF-8 by default
+						// No encoding in XML declaration - UTF-8 by default.
 						return Encoding.UTF8;
 					}
 				default:
-					//No XML declaration - UTF-8 by default
+					// No XML declaration - UTF-8 by default.
 					return Encoding.UTF8;
 			}
 		}
-		//Hmmm, empty file? Anyway
+		// Hmmm, empty file? Anyway.
 		return Encoding.UTF8;
 	}
 }

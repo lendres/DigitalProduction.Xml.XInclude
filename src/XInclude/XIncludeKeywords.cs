@@ -64,16 +64,16 @@ internal class XIncludeKeywords
 	// http://www.w3.org/2001/XInclude
 	internal string OldXIncludeNamespace { get => _oldXIncludeNamespace; }
 
-	// include
+	// Include.
 	internal string Include { get => _Include; }
 
-	// href
+	// Href.
 	internal string Href { get => _Href; }
 
-	// parse
+	// Parse.
 	internal string Parse { get => _parse; }
 
-	// xml
+	// Xml.
 	internal string Xml
 	{
 		get
