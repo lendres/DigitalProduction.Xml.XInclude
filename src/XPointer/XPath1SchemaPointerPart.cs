@@ -4,29 +4,29 @@ namespace DigitalProduction.Xml.XPointer;
 
 internal class XPath1SchemaPointerPart : PointerPart
 {
-	private string _xpath;
+	private string _xpath	= string.Empty;
 
 	public string XPath
 	{
-		get => this._xpath;
-		set => this._xpath = value;
+		get => _xpath;
+		set => _xpath = value;
 	}
 
-	public override XmlNodeList Evaluate(XmlDocument doc, XmlNamespaceManager nm)
+	public override XmlNodeList? Evaluate(XmlDocument doc, XmlNamespaceManager nm)
 	{
 		try
 		{
-			return doc.SelectNodes(this._xpath, nm);
+			return doc.SelectNodes(_xpath, nm);
 		}
 		catch
 		{
-			return (XmlNodeList)null;
+			return null;
 		}
 	}
 
-	public static XPath1SchemaPointerPart ParseSchemaData(XPointerLexer lexer)
+	public static XPath1SchemaPointerPart? ParseSchemaData(XPointerLexer lexer)
 	{
-		XPath1SchemaPointerPart schemaData = new XPath1SchemaPointerPart();
+		XPath1SchemaPointerPart schemaData = new();
 		try
 		{
 			schemaData.XPath = lexer.ParseEscapedData();
@@ -34,7 +34,7 @@ internal class XPath1SchemaPointerPart : PointerPart
 		catch (Exception ex)
 		{
 			Console.Error.WriteLine("Syntax error in xpath1() schema data: " + ex.Message);
-			return (XPath1SchemaPointerPart)null;
+			return null;
 		}
 		return schemaData;
 	}

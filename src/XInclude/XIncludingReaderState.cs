@@ -6,10 +6,12 @@ namespace DigitalProduction.Xml.XInclude;
 /// <author>Oleg Tkachenko, oleg@tkachenko.com</author>
 internal enum XIncludingReaderState
 {
-	//Default state
+	// Default state.
 	Default,
-	//xml:base attribute is being exposed
+
+	// xml:base attribute is being exposed.
 	ExposingXmlBaseAttr,
-	//xml:base attribute value is being exposed
+
+	// xml:base attribute value is being exposed.
 	ExposingXmlBaseAttrValue
 }

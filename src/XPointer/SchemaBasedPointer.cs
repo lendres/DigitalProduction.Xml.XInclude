@@ -3,22 +3,23 @@ using System.Xml;
 
 namespace DigitalProduction.Xml.XPointer;
 
-internal class SchemaBasedPointer : Pointer
+internal class SchemaBasedPointer(ArrayList parts) : Pointer
 {
-	private ArrayList _parts;
+	private readonly ArrayList _parts = parts;
 
-	public ArrayList Parts => this._parts;
-
-	public SchemaBasedPointer(ArrayList parts) => this._parts = parts;
+	public ArrayList Parts => _parts;
 
 	public override XmlNodeList Evaluate(XmlDocument doc)
 	{
-		XmlNamespaceManager nm = new XmlNamespaceManager(doc.NameTable);
-		for (int index = 0; index < this._parts.Count; ++index)
+		XmlNamespaceManager nm = new(doc.NameTable);
+		for (int index = 0; index < _parts.Count; ++index)
 		{
-			XmlNodeList xmlNodeList = ((PointerPart) this._parts[index]).Evaluate(doc, nm);
+			PointerPart? pointerPart = _parts[index] as PointerPart;
+			XmlNodeList? xmlNodeList = pointerPart?.Evaluate(doc, nm);
 			if (xmlNodeList != null && xmlNodeList.Count > 0)
+			{
 				return xmlNodeList;
+			}
 		}
 		throw new NotFoundException("XPointer doesn't identify any subresource");
 	}

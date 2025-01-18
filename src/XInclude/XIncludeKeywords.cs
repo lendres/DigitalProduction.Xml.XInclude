@@ -8,95 +8,78 @@ namespace DigitalProduction.Xml.XInclude;
 /// <author>Oleg Tkachenko, oleg@tkachenko.com</author>
 internal class XIncludeKeywords
 {
-	XmlNameTable nameTable;
+	readonly XmlNameTable nameTable;
+
+	// Keyword strings
+	private const string s_xIncludeNamespace	= "http://www.w3.org/2003/XInclude";
+	private const string s_oldXIncludeNamespace	= "http://www.w3.org/2001/XInclude";
+	private const string s_include				= "include";
+	private const string s_href					= "href";
+	private const string s_parse				= "parse";
+	private const string s_xml					= "xml";
+	private const string s_text					= "text";
+	private const string s_xPointer				= "xpointer";
+	private const string s_accept				= "accept";
+	private const string s_acceptCharset		= "accept-charset";
+	private const string s_acceptLanguage		= "accept-language";
+	private const string s_encoding				= "encoding";
+	private const string s_fallback				= "fallback";
+	private const string s_xmlNamespace			= "http://www.w3.org/XML/1998/namespace";
+	private const string s_base					= "base";
+	private const string s_xmlBase				= "xml:base";
+
+	// Properties
+	private readonly string	_xIncludeNamespace;
+	private readonly string	_oldXIncludeNamespace;
+	private readonly string	_Include;
+	private readonly string	_Href;
+	private readonly string	_parse;
+	private string?			_xml;
+	private string?			_text;
+	private string?			_xPointer;
+	private string?			_accept;
+	private string?			_acceptCharset;
+	private string?			_acceptLanguage;
+	private string?			_encoding;
+	private string?			_fallback;
+	private string?			_xmlNamespace;
+	private string?			_base;
+	private string?			_xmlBase;
 
 	internal XIncludeKeywords(XmlNameTable nt)
 	{
-		nameTable = nt;
-		//Preload some keywords
-		_XIncludeNamespace = nameTable.Add(s_XIncludeNamespace);
-		_OldXIncludeNamespace = nameTable.Add(s_OldXIncludeNamespace);
-		_Include = nameTable.Add(s_Include);
-		_Href = nameTable.Add(s_Href);
-		_Parse = nameTable.Add(s_Parse);
+		nameTable				= nt;
+		
+		// Preload some keywords.
+		_xIncludeNamespace		= nameTable.Add(s_xIncludeNamespace);
+		_oldXIncludeNamespace	= nameTable.Add(s_oldXIncludeNamespace);
+		_Include				= nameTable.Add(s_include);
+		_Href					= nameTable.Add(s_href);
+		_parse					= nameTable.Add(s_parse);
 	}
-
-	//
-	// Keyword strings
-	private const string s_XIncludeNamespace = "http://www.w3.org/2003/XInclude";
-	private const string s_OldXIncludeNamespace = "http://www.w3.org/2001/XInclude";
-	private const string s_Include = "include";
-	private const string s_Href = "href";
-	private const string s_Parse = "parse";
-	private const string s_Xml = "xml";
-	private const string s_Text = "text";
-	private const string s_Xpointer = "xpointer";
-	private const string s_Accept = "accept";
-	private const string s_AcceptCharset = "accept-charset";
-	private const string s_AcceptLanguage = "accept-language";
-	private const string s_Encoding = "encoding";
-	private const string s_Fallback = "fallback";
-	private const string s_XmlNamespace = "http://www.w3.org/XML/1998/namespace";
-	private const string s_Base = "base";
-	private const string s_XmlBase = "xml:base";
-
-	//
-	// Properties
-	private string _XIncludeNamespace;
-	private string _OldXIncludeNamespace;
-	private string _Include;
-	private string _Href;
-	private string _Parse;
-	private string _Xml;
-	private string _Text;
-	private string _Xpointer;
-	private string _Accept;
-	private string _AcceptCharset;
-	private string _AcceptLanguage;
-	private string _Encoding;
-	private string _Fallback;
-	private string _XmlNamespace;
-	private string _Base;
-	private string _XmlBase;
 
 	// http://www.w3.org/2003/XInclude
-	internal string XIncludeNamespace
-	{
-		get { return _XIncludeNamespace; }
-	}
+	internal string XIncludeNamespace { get => _xIncludeNamespace; }
 
 	// http://www.w3.org/2001/XInclude
-	internal string OldXIncludeNamespace
-	{
-		get { return _OldXIncludeNamespace; }
-	}
+	internal string OldXIncludeNamespace { get => _oldXIncludeNamespace; }
 
 	// include
-	internal string Include
-	{
-		get { return _Include; }
-	}
+	internal string Include { get => _Include; }
 
 	// href
-	internal string Href
-	{
-		get { return _Href; }
-	}
+	internal string Href { get => _Href; }
 
 	// parse
-	internal string Parse
-	{
-		get { return _Parse; }
-	}
+	internal string Parse { get => _parse; }
 
 	// xml
 	internal string Xml
 	{
 		get
 		{
-			if (_Xml == null)
-				_Xml = nameTable.Add(s_Xml);
-			return _Xml;
+			_xml ??= nameTable.Add(s_xml);
+			return _xml;
 		}
 	}
 
@@ -105,9 +88,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_Text == null)
-				_Text = nameTable.Add(s_Text);
-			return _Text;
+			_text ??= nameTable.Add(s_text);
+			return _text;
 		}
 	}
 
@@ -116,9 +98,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_Xpointer == null)
-				_Xpointer = nameTable.Add(s_Xpointer);
-			return _Xpointer;
+			_xPointer ??= nameTable.Add(s_xPointer);
+			return _xPointer;
 		}
 	}
 
@@ -127,9 +108,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_Accept == null)
-				_Accept = nameTable.Add(s_Accept);
-			return _Accept;
+			_accept ??= nameTable.Add(s_accept);
+			return _accept;
 		}
 	}
 
@@ -138,9 +118,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_AcceptCharset == null)
-				_AcceptCharset = nameTable.Add(s_AcceptCharset);
-			return _AcceptCharset;
+			_acceptCharset ??= nameTable.Add(s_acceptCharset);
+			return _acceptCharset;
 		}
 	}
 
@@ -149,9 +128,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_AcceptLanguage == null)
-				_AcceptLanguage = nameTable.Add(s_AcceptLanguage);
-			return _AcceptLanguage;
+			_acceptLanguage ??= nameTable.Add(s_acceptLanguage);
+			return _acceptLanguage;
 		}
 	}
 
@@ -160,9 +138,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_Encoding == null)
-				_Encoding = nameTable.Add(s_Encoding);
-			return _Encoding;
+			_encoding ??= nameTable.Add(s_encoding);
+			return _encoding;
 		}
 	}
 
@@ -171,9 +148,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_Fallback == null)
-				_Fallback = nameTable.Add(s_Fallback);
-			return _Fallback;
+			_fallback ??= nameTable.Add(s_fallback);
+			return _fallback;
 		}
 	}
 
@@ -182,9 +158,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_XmlNamespace == null)
-				_XmlNamespace = nameTable.Add(s_XmlNamespace);
-			return _XmlNamespace;
+			_xmlNamespace ??= nameTable.Add(s_xmlNamespace);
+			return _xmlNamespace;
 		}
 	}
 
@@ -193,9 +168,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_Base == null)
-				_Base = nameTable.Add(s_Base);
-			return _Base;
+			_base ??= nameTable.Add(s_base);
+			return _base;
 		}
 	}
 
@@ -204,9 +178,8 @@ internal class XIncludeKeywords
 	{
 		get
 		{
-			if (_XmlBase == null)
-				_XmlBase = nameTable.Add(s_XmlBase);
-			return _XmlBase;
+			_xmlBase ??= nameTable.Add(s_xmlBase);
+			return _xmlBase;
 		}
 	}
 

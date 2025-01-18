@@ -7,36 +7,24 @@ namespace DigitalProduction.Xml.XPointer;
 internal class ElementSchemaPointerPart : PointerPart
 {
 	private string		_NCName			= "";
-	private string		_xpath			= "";
-	private ArrayList	_childSequence	= new();
+	private string		_xPath			= "";
+	private ArrayList	_childSequence	= [];
 
-	public string NCName
-	{
-		get => this._NCName;
-		set => this._NCName = value;
-	}
+	public string NCName { get => _NCName; set => _NCName = value; }
 
-	public string XPath
-	{
-		get => this._xpath;
-		set => this._xpath = value;
-	}
+	public string XPath { get => _xPath; set => _xPath = value; }
 
-	public ArrayList ChildSequence
-	{
-		get => this._childSequence;
-		set => this._childSequence = value;
-	}
+	public ArrayList ChildSequence { get => _childSequence; set => _childSequence = value; }
 
 	public override XmlNodeList? Evaluate(XmlDocument doc, XmlNamespaceManager nm)
 	{
-		return doc.SelectNodes(this._xpath, nm);
+		return doc.SelectNodes(_xPath, nm);
 	}
 
 	public static ElementSchemaPointerPart? ParseSchemaData(XPointerLexer lexer)
 	{
-		StringBuilder stringBuilder = new StringBuilder();
-		ElementSchemaPointerPart schemaData = new ElementSchemaPointerPart();
+		StringBuilder stringBuilder = new();
+		ElementSchemaPointerPart schemaData = new();
 		lexer.NextLexeme();
 		if (lexer.Kind == XPointerLexer.LexKind.NCName)
 		{
@@ -46,7 +34,7 @@ internal class ElementSchemaPointerPart : PointerPart
 			stringBuilder.Append("')");
 			lexer.NextLexeme();
 		}
-		schemaData.ChildSequence = new ArrayList();
+		schemaData.ChildSequence = [];
 		while (lexer.Kind == XPointerLexer.LexKind.Slash)
 		{
 			lexer.NextLexeme();
@@ -63,7 +51,7 @@ internal class ElementSchemaPointerPart : PointerPart
 			schemaData.ChildSequence.Add((object)lexer.Number);
 			stringBuilder.Append("/*[");
 			stringBuilder.Append(lexer.Number);
-			stringBuilder.Append("]");
+			stringBuilder.Append(']');
 			lexer.NextLexeme();
 		}
 		if (lexer.Kind != XPointerLexer.LexKind.RRBracket)

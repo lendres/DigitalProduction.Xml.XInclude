@@ -1,42 +1,41 @@
 ﻿using System.Xml;
 
-namespace DigitalProduction.Xml.XPointer
+namespace DigitalProduction.Xml.XPointer;
+
+internal class XPointerSchemaPointerPart : PointerPart
 {
-	internal class XPointerSchemaPointerPart : PointerPart
+	private string _xpath	= string.Empty;
+
+	public string XPath
 	{
-		private string _xpath;
+		get => _xpath;
+		set => _xpath = value;
+	}
 
-		public string XPath
+	public override XmlNodeList? Evaluate(XmlDocument doc, XmlNamespaceManager nm)
+	{
+		try
 		{
-			get => this._xpath;
-			set => this._xpath = value;
+			return doc.SelectNodes(_xpath, nm);
 		}
+		catch
+		{
+			return null;
+		}
+	}
 
-		public override XmlNodeList Evaluate(XmlDocument doc, XmlNamespaceManager nm)
+	public static XPointerSchemaPointerPart? ParseSchemaData(XPointerLexer lexer)
+	{
+		XPointerSchemaPointerPart schemaData = new();
+		try
 		{
-			try
-			{
-				return doc.SelectNodes(this._xpath, nm);
-			}
-			catch
-			{
-				return (XmlNodeList)null;
-			}
+			schemaData.XPath = lexer.ParseEscapedData();
 		}
-
-		public static XPointerSchemaPointerPart ParseSchemaData(XPointerLexer lexer)
+		catch (Exception ex)
 		{
-			XPointerSchemaPointerPart schemaData = new XPointerSchemaPointerPart();
-			try
-			{
-				schemaData.XPath = lexer.ParseEscapedData();
-			}
-			catch (Exception ex)
-			{
-				Console.Error.WriteLine("Syntax error in xpointer() schema data: " + ex.Message);
-				return (XPointerSchemaPointerPart)null;
-			}
-			return schemaData;
+			Console.Error.WriteLine("Syntax error in xpointer() schema data: " + ex.Message);
+			return null;
 		}
+		return schemaData;
 	}
 }

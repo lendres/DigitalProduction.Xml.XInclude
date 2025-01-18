@@ -135,7 +135,7 @@ internal class LexUtils
 	"\u3021\u3029\u3041\u3094\u30a1\u30fa\u3105\u312c" +
 	"\u4e00\u9fa5\uac00\ud7a3";
 
-	private static byte[] _chars;
+	private static readonly byte[] _chars;
 
 	static LexUtils()
 	{

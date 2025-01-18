@@ -5,9 +5,15 @@ namespace DigitalProduction.Xml.XInclude;
 /// </summary>
 public abstract class XIncludeException : ApplicationException
 {
-	public XIncludeException(string message) : base(message) { }
+	public XIncludeException(string message) : 
+		base(message)
+	{
+	}
+
 	public XIncludeException(string message, Exception innerException)
-		: base(message, innerException) { }
+		: base(message, innerException)
+	{
+	}
 }
 
 /// <summary>
@@ -20,9 +26,15 @@ public abstract class XIncludeException : ApplicationException
 /// </remarks>
 internal class ResourceException : XIncludeException
 {
-	public ResourceException(string message) : base(message) { }
-	public ResourceException(string message, Exception innerException)
-		: base(message, innerException) { }
+	public ResourceException(string message) :
+		base(message)
+	{
+	}
+	
+	public ResourceException(string message, Exception innerException) :
+		base(message, innerException)
+	{
+	}
 }
 
 /// <summary>
@@ -30,17 +42,23 @@ internal class ResourceException : XIncludeException
 /// </summary>
 public abstract class FatalException : XIncludeException
 {
-	public FatalException(string message) : base(message) { }
-	public FatalException(string message, Exception innerException)
-		: base(message, innerException) { }
+	public FatalException(string message) : 
+		base(message)
+	{
+	}
+	
+	public FatalException(string message, Exception innerException) :
+		base(message, innerException)
+	{
+	}
 }
 
 /// <summary>
 /// Missing both "href" and "xpointer" attributes exception.
 /// </summary>
-public class MissingHrefAndXpointerException : FatalException
+public class MissingHrefAndXpointerException(string message) :
+	FatalException(message)
 {
-	public MissingHrefAndXpointerException(string message) : base(message) { }
 }
 
 /// <summary>
@@ -50,21 +68,21 @@ public class UnknownParseAttributeValueException : FatalException
 {
 	public UnknownParseAttributeValueException(string attrValue) :
 		base("Unknown 'parse' attribute value: '" + attrValue + "'.")
-	{ }
+	{
+	}
+
 	public UnknownParseAttributeValueException(string attrValue, string uri, int line, int position) :
-		base("Unknown 'parse' attribute value: '" + attrValue + "'."
-		+ uri + ", Line " + line + ", Position " + position)
-	{ }
+		base("Unknown 'parse' attribute value: '" + attrValue + "'." + uri + ", Line " + line + ", Position " + position)
+	{
+	}
 }
 
 /// <summary>
 /// Non XML character in a document to include exception.
 /// </summary>
-public class NonXmlCharacterException : FatalException
+public class NonXmlCharacterException(char c) :
+	FatalException("Included document contains forbidden in XML character: 0x"+ ((int)c).ToString("X2"))
 {
-	public NonXmlCharacterException(char c) :
-		base("Included document contains forbidden in XML character: 0x"+ ((int)c).ToString("X2"))
-	{ }
 }
 
 /// <summary>
@@ -74,11 +92,14 @@ public class CircularInclusionException : FatalException
 {
 	public CircularInclusionException(Uri uri) :
 		base("Circular inclusion has been detected, inclusion location: " + uri.AbsoluteUri)
-	{ }
+	{
+	}
+
 	public CircularInclusionException(Uri uri, string locationUri, int line, int position) :
 		base("Circular inclusion has been detected, inclusion location: " + uri.AbsoluteUri + "."
 		+ locationUri + ", Line " + line + ", Position " + position)
-	{ }
+	{
+	}
 }
 
 /// <summary>
@@ -87,23 +108,28 @@ public class CircularInclusionException : FatalException
 public class FatalResourceException : FatalException
 {
 	public FatalResourceException(Exception re) :
-	base("Resource error has occured and no fallback has been provided: " + re.Message, re)
-	{ }
+		base("Resource error has occured and no fallback has been provided: " + re.Message, re)
+	{
+	}
+
+	public FatalResourceException() :
+		base("Resource error has occured and no fallback has been provided.")
+	{
+	}
 }
 
 /// <summary>
 /// XInclude syntax error exception.
 /// </summary>
-public class SyntaxError : FatalException
+public class SyntaxError(string message) :
+	FatalException(message)
 {
-	public SyntaxError(string message) : base(message) { }
 }
 
 /// <summary>
 /// Include location identifies an attribute or namespace node.
 /// </summary>
-public class AttributeOrNamespaceInIncludeLocationError : FatalException
+public class AttributeOrNamespaceInIncludeLocationError(string message) :
+	FatalException(message)
 {
-	public AttributeOrNamespaceInIncludeLocationError(string message) : base(message) { }
 }
-
