@@ -5,109 +5,109 @@ namespace DigitalProduction.Xml.XPointer;
 
 internal class XPointerLexer
 {
-	private string _ptr;
-	private int _ptrIndex;
-	private XPointerLexer.LexKind _kind;
-	private char _currChar;
-	private int _number;
-	private string _ncname;
-	private string _prefix;
-	private bool _canBeSchemaName;
+	private readonly string			_ptr;
+	private int						_ptrIndex;
+	private XPointerLexer.LexKind	_kind;
+	private char					_currChar;
+	private int						_number;
+	private string					_ncname				= string.Empty;
+	private string					_prefix				= string.Empty;
+	private bool					_canBeSchemaName;
 
-	public XPointerLexer(string p)
+	public XPointerLexer(string pointer)
 	{
-		this._ptr = p != null ? p : throw new ArgumentNullException("pointer", "XPointer pointer cannot be null");
-		this.NextChar();
+		_ptr = pointer ?? throw new ArgumentNullException(nameof(pointer), "XPointer pointer cannot be null");
+		NextChar();
 	}
 
 	public bool NextChar()
 	{
-		if (this._ptrIndex < this._ptr.Length)
+		if (_ptrIndex < _ptr.Length)
 		{
-			this._currChar = this._ptr[this._ptrIndex++];
+			_currChar = _ptr[_ptrIndex++];
 			return true;
 		}
-		this._currChar = char.MinValue;
+		_currChar = char.MinValue;
 		return false;
 	}
 
-	public XPointerLexer.LexKind Kind => this._kind;
+	public XPointerLexer.LexKind Kind => _kind;
 
-	public int Number => this._number;
+	public int Number => _number;
 
-	public string NCName => this._ncname;
+	public string NCName => _ncname;
 
-	public string Prefix => this._prefix;
+	public string Prefix => _prefix;
 
-	public bool CanBeSchemaName => this._canBeSchemaName;
+	public bool CanBeSchemaName => _canBeSchemaName;
 
 	public void SkipWhiteSpace()
 	{
-		while (LexUtils.IsWhitespace(this._currChar))
-			this.NextChar();
+		while (LexUtils.IsWhitespace(_currChar))
+			NextChar();
 	}
 
 	public bool NextLexeme()
 	{
-		switch (this._currChar)
+		switch (_currChar)
 		{
 			case char.MinValue:
-				this._kind = XPointerLexer.LexKind.Eof;
+				_kind = XPointerLexer.LexKind.Eof;
 				return false;
 			case '(':
 			case ')':
 			case '/':
 			case '=':
-				this._kind = (XPointerLexer.LexKind)Convert.ToInt32(this._currChar);
-				this.NextChar();
+				_kind = (XPointerLexer.LexKind)Convert.ToInt32(_currChar);
+				NextChar();
 				break;
 			case '^':
-				this.NextChar();
-				if (this._currChar != '^' && this._currChar != '(' && this._currChar != ')')
+				NextChar();
+				if (_currChar != '^' && _currChar != '(' && _currChar != ')')
 					throw new XPointerSyntaxException("Circumflex character must be escaped");
-				this._kind = XPointerLexer.LexKind.EscapedData;
-				this.NextChar();
+				_kind = XPointerLexer.LexKind.EscapedData;
+				NextChar();
 				break;
 			default:
-				if (char.IsDigit(this._currChar))
+				if (char.IsDigit(_currChar))
 				{
-					this._kind = XPointerLexer.LexKind.Number;
-					int startIndex = this._ptrIndex - 1;
+					_kind = XPointerLexer.LexKind.Number;
+					int startIndex = _ptrIndex - 1;
 					int length = 0;
-					while (char.IsDigit(this._currChar))
+					while (char.IsDigit(_currChar))
 					{
-						this.NextChar();
-						++length;
+						NextChar();
+						length++;
 					}
-					this._number = XmlConvert.ToInt32(this._ptr.Substring(startIndex, length));
+					_number = XmlConvert.ToInt32(_ptr.Substring(startIndex, length));
 					break;
 				}
-				if (LexUtils.IsStartNameChar(this._currChar))
+				if (LexUtils.IsStartNameChar(_currChar))
 				{
-					this._kind = XPointerLexer.LexKind.NCName;
-					this._prefix = string.Empty;
-					this._ncname = this.ParseName();
-					if (this._currChar == ':')
+					_kind = XPointerLexer.LexKind.NCName;
+					_prefix = string.Empty;
+					_ncname = ParseName();
+					if (_currChar == ':')
 					{
-						this.NextChar();
-						this._prefix = this._ncname;
-						this._kind = XPointerLexer.LexKind.QName;
-						if (LexUtils.IsStartNCNameChar(this._currChar))
-							this._ncname = this.ParseName();
+						NextChar();
+						_prefix = _ncname;
+						_kind = XPointerLexer.LexKind.QName;
+						if (LexUtils.IsStartNCNameChar(_currChar))
+							_ncname = ParseName();
 						else
-							throw new XPointerSyntaxException("Wrong Name token: " + this._prefix + ":" + (object)this._currChar);
+							throw new XPointerSyntaxException("Wrong Name token: " + _prefix + ":" + (object)_currChar);
 					}
-					this._canBeSchemaName = this._currChar == '(';
+					_canBeSchemaName = _currChar == '(';
 					break;
 				}
-				if (LexUtils.IsWhitespace(this._currChar))
+				if (LexUtils.IsWhitespace(_currChar))
 				{
-					this._kind = XPointerLexer.LexKind.Space;
-					while (LexUtils.IsWhitespace(this._currChar))
-						this.NextChar();
+					_kind = XPointerLexer.LexKind.Space;
+					while (LexUtils.IsWhitespace(_currChar))
+						NextChar();
 					break;
 				}
-				this._kind = XPointerLexer.LexKind.EscapedData;
+				_kind = XPointerLexer.LexKind.EscapedData;
 				break;
 		}
 		return true;
@@ -115,23 +115,23 @@ internal class XPointerLexer
 
 	private string ParseName()
 	{
-		int startIndex = this._ptrIndex - 1;
+		int startIndex = _ptrIndex - 1;
 		int length = 0;
-		while (LexUtils.IsNCNameChar(this._currChar))
+		while (LexUtils.IsNCNameChar(_currChar))
 		{
-			this.NextChar();
+			NextChar();
 			++length;
 		}
-		return this._ptr.Substring(startIndex, length);
+		return _ptr.Substring(startIndex, length);
 	}
 
 	public string ParseEscapedData()
 	{
 		int num = 0;
-		StringBuilder stringBuilder = new StringBuilder();
+		StringBuilder stringBuilder = new();
 		do
 		{
-			switch (this._currChar)
+			switch (_currChar)
 			{
 				case '(':
 					++num;
@@ -139,23 +139,23 @@ internal class XPointerLexer
 				case ')':
 					if (num-- == 0)
 					{
-						this.NextLexeme();
+						NextLexeme();
 						return stringBuilder.ToString();
 					}
 					goto default;
 				case '^':
-					if (!this.NextChar())
+					if (!NextChar())
 						throw new XPointerSyntaxException("Unexpected end of schema data");
-					if (this._currChar != '^' && this._currChar != '(' && this._currChar != ')')
+					if (_currChar != '^' && _currChar != '(' && _currChar != ')')
 						throw new XPointerSyntaxException("Circumflex character must be escaped");
-					stringBuilder.Append(this._currChar);
+					stringBuilder.Append(_currChar);
 					break;
 				default:
-					stringBuilder.Append(this._currChar);
+					stringBuilder.Append(_currChar);
 					break;
 			}
 		}
-		while (this.NextChar());
+		while (NextChar());
 		throw new XPointerSyntaxException("Unexpected end of schema data");
 	}
 

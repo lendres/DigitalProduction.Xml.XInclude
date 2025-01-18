@@ -13,128 +13,67 @@ namespace DigitalProduction.Xml.XInclude;
 /// </remarks>
 internal class TextIncludingReader : XmlReader
 {
-	private string _encoding;
-	private ReadState _state;
-	private string _value = "";
-	private Uri _includeLocation;
-	private string _accept, _acceptCharset, _acceptLanguage;
-	private string _href;
+	private readonly string		_encoding;
+	private ReadState			_state;
+	private string				_value				= "";
+	private readonly Uri		_includeLocation;
+	private readonly string		_accept;
+	private readonly string		_acceptCharset;
+	private readonly string		_acceptLanguage;
+	private readonly string		_href;
 
 	internal TextIncludingReader(Uri includeLocation, string encoding, string accept, string acceptCharset, string acceptLanguage)
 	{
-		_includeLocation = includeLocation;
-		_href = includeLocation.AbsoluteUri;
-		_encoding = encoding;
-		_state = ReadState.Initial;
-		_accept = accept;
-		_acceptCharset = acceptCharset;
-		_acceptLanguage = acceptLanguage;
+		_includeLocation	= includeLocation;
+		_href				= includeLocation.AbsoluteUri;
+		_encoding			= encoding;
+		_state				= ReadState.Initial;
+		_accept				= accept;
+		_acceptCharset		= acceptCharset;
+		_acceptLanguage		= acceptLanguage;
 	}
 
-	public override int AttributeCount
-	{
-		get { return 0; }
-	}
+	public override int AttributeCount => 0;
 
-	public override string BaseURI
-	{
-		get { return _href; }
-	}
+	public override string BaseURI => _href;
 
-	public override int Depth
-	{
-		get { return _state==ReadState.Interactive ? 1 : 0; }
-	}
+	public override int Depth => _state == ReadState.Interactive ? 1 : 0;
 
-	public override bool EOF
-	{
-		get { return _state==ReadState.EndOfFile ? true : false; }
-	}
+	public override bool EOF => _state == ReadState.EndOfFile;
 
-	public override bool HasValue
-	{
-		get { return _state==ReadState.Interactive ? true : false; }
-	}
+	public override bool HasValue => _state == ReadState.Interactive;
 
-	public override bool IsDefault
-	{
-		get { return false; }
-	}
+	public override bool IsDefault => false;
 
-	public override bool IsEmptyElement
-	{
-		get { return false; }
-	}
+	public override bool IsEmptyElement => false;
 
-	public override string this[int index]
-	{
-		get { return String.Empty; }
-	}
+	public override string this[int index] => String.Empty;
 
-	public override string this[string qname]
-	{
-		get { return String.Empty; }
-	}
+	public override string this[string qname] => String.Empty;
 
-	public override string this[string localname, string nsuri]
-	{
-		get { return String.Empty; }
-	}
+	public override string? this[string localname, string? namespaceURI] => String.Empty;
 
-	public override string LocalName
-	{
-		get { return String.Empty; }
-	}
+	public override string LocalName => String.Empty;
 
-	public override string Name
-	{
-		get { return String.Empty; }
-	}
+	public override string Name => String.Empty;
 
-	public override string NamespaceURI
-	{
-		get { return String.Empty; }
-	}
+	public override string NamespaceURI => String.Empty;
 
-	public override XmlNameTable NameTable
-	{
-		get { return null; }
-	}
+	public override XmlNameTable NameTable => throw new Exception("Not a value property for this the class "+nameof(TextIncludingReader));
 
-	public override XmlNodeType NodeType
-	{
-		get { return _state==ReadState.Interactive ? XmlNodeType.Text : XmlNodeType.None; }
-	}
+	public override XmlNodeType NodeType => _state == ReadState.Interactive ? XmlNodeType.Text : XmlNodeType.None;
 
-	public override string Prefix
-	{
-		get { return String.Empty; }
-	}
+	public override string Prefix => String.Empty;
 
-	public override char QuoteChar
-	{
-		get { return '"'; }
-	}
+	public override char QuoteChar => '"';
 
-	public override ReadState ReadState
-	{
-		get { return _state; }
-	}
+	public override ReadState ReadState { get => _state; }
 
-	public override string Value
-	{
-		get { return _state==ReadState.Interactive ? _value : String.Empty; }
-	}
+	public override string Value { get => _state == ReadState.Interactive ? _value : String.Empty; }
 
-	public override string XmlLang
-	{
-		get { return String.Empty; }
-	}
+	public override string XmlLang { get => String.Empty; }
 
-	public override XmlSpace XmlSpace
-	{
-		get { return XmlSpace.None; }
-	}
+	public override XmlSpace XmlSpace {	get => XmlSpace.None; }
 
 	public override void Close()
 	{
@@ -143,20 +82,20 @@ internal class TextIncludingReader : XmlReader
 
 	public override string GetAttribute(int index)
 	{
-		throw new ArgumentOutOfRangeException("index", index, "No attributes exposed");
+		throw new ArgumentOutOfRangeException(nameof(index), index, "No attributes exposed");
 	}
 
-	public override string GetAttribute(string qname)
+	public override string? GetAttribute(string qname)
 	{
 		return null;
 	}
 
-	public override string GetAttribute(string localname, string nsuri)
+	public override string? GetAttribute(string localname, string? namespaceURI)
 	{
 		return null;
 	}
 
-	public override string LookupNamespace(string prefix)
+	public override string? LookupNamespace(string prefix)
 	{
 		return null;
 	}
@@ -168,7 +107,7 @@ internal class TextIncludingReader : XmlReader
 		return false;
 	}
 
-	public override bool MoveToAttribute(string localname, string nsuri)
+	public override bool MoveToAttribute(string localname, string? namespaceURI)
 	{
 		return false;
 	}
@@ -195,17 +134,17 @@ internal class TextIncludingReader : XmlReader
 
 	public override string ReadInnerXml()
 	{
-		return _state==ReadState.Interactive ? _value : String.Empty;
+		return _state == ReadState.Interactive ? _value : String.Empty;
 	}
 
 	public override string ReadOuterXml()
 	{
-		return _state==ReadState.Interactive ? _value : String.Empty;
+		return _state == ReadState.Interactive ? _value : String.Empty;
 	}
 
 	public override string ReadString()
 	{
-		return _state==ReadState.Interactive ? _value : String.Empty;
+		return _state == ReadState.Interactive ? _value : String.Empty;
 	}
 
 	public override void ResolveEntity() { }
@@ -230,20 +169,20 @@ internal class TextIncludingReader : XmlReader
 				*/
 				try
 				{
-					//TODO: try to get "content-encoding" from wRes.Headers collection?
-					//If mime type is xml-aware, get resource encoding as per XML 1.0
+					// TODO: try to get "content-encoding" from wRes.Headers collection?
+					// If mime type is xml-aware, get resource encoding as per XML 1.0.
 					string contentType = wRes.ContentType.ToLower();
 					if (contentType == "text/xml" ||
 						contentType == "application/xml" ||
 						contentType.StartsWith("text/") && contentType.EndsWith("+xml") ||
 						contentType.StartsWith("application/") && contentType.EndsWith("+xml"))
 					{
-						//Yes, that's xml, let's read encoding from the xml declaration                    
+						// Yes, that's xml, let's read encoding from the xml declaration.                    
 						reader = new StreamReader(stream, GetEncodingFromXMLDecl(_href));
 					}
 					else if (_encoding != null)
 					{
-						//Try to use user-specified encoding
+						// Try to use user-specified encoding.
 						Encoding enc;
 						try
 						{
@@ -256,18 +195,20 @@ internal class TextIncludingReader : XmlReader
 						reader = new StreamReader(stream, enc);
 					}
 					else
-						//Fallback to UTF-8
+					{
+						// Fallback to UTF-8.
 						reader = new StreamReader(stream, Encoding.UTF8);
+					}
 					_value = reader.ReadToEnd();
 					TextUtils.CheckForNonXmlChars(_value);
 				}
-				catch (ResourceException re)
+				catch (ResourceException)
 				{
-					throw re;
+					throw;
 				}
 				catch (OutOfMemoryException oome)
 				{
-					//Crazy include - memory is out - what about reading by chunks?
+					// Crazy include - memory is out - what about reading by chunks?
 					throw new ResourceException("Out of memory while reading resource '" + _href + "'", oome);
 				}
 				catch (IOException ioe)
@@ -277,7 +218,7 @@ internal class TextIncludingReader : XmlReader
 				_state = ReadState.Interactive;
 				return true;
 			case ReadState.Interactive:
-				//No more input
+				// No more input.
 				_state = ReadState.EndOfFile;
 				return false;
 			default:
@@ -292,10 +233,12 @@ internal class TextIncludingReader : XmlReader
 	/// of the resource to inlclude.</param>		
 	/// <returns>The document encoding as per XML declaration.</returns>
 	/// <exception cref="ResourceException">Resource error.</exception>
-	internal Encoding GetEncodingFromXMLDecl(string href)
+	internal static Encoding GetEncodingFromXMLDecl(string href)
 	{
-		XmlTextReader tmpReader = new XmlTextReader(href);
-		tmpReader.WhitespaceHandling = WhitespaceHandling.None;
+		XmlTextReader tmpReader = new(href)
+		{
+			WhitespaceHandling = WhitespaceHandling.None
+		};
 		while (tmpReader.Read())
 		{
 			switch (tmpReader.NodeType)
@@ -314,14 +257,16 @@ internal class TextIncludingReader : XmlReader
 						}
 					}
 					else
-						//No encoding in XML declaration - UTF-8 by default
+					{
+						// No encoding in XML declaration - UTF-8 by default.
 						return Encoding.UTF8;
+					}
 				default:
-					//No XML declaration - UTF-8 by default
+					// No XML declaration - UTF-8 by default.
 					return Encoding.UTF8;
 			}
 		}
-		//Hmmm, empty file? Anyway
+		// Hmmm, empty file? Anyway.
 		return Encoding.UTF8;
 	}
 }

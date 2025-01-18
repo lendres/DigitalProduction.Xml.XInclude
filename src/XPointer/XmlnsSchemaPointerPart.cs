@@ -2,34 +2,28 @@
 
 namespace DigitalProduction.Xml.XPointer;
 
-internal class XmlnsSchemaPointerPart : PointerPart
+internal class XmlnsSchemaPointerPart(string prefix, string uri) : PointerPart
 {
-	private string _prefix;
-	private string _uri;
+	private readonly string _prefix	= prefix;
+	private readonly string _uri	= uri;
 
-	public XmlnsSchemaPointerPart(string prefix, string uri)
+	public string Prefix => _prefix;
+
+	public string Uri => _uri;
+
+	public override XmlNodeList? Evaluate(XmlDocument doc, XmlNamespaceManager nm)
 	{
-		this._prefix = prefix;
-		this._uri = uri;
+		nm.AddNamespace(_prefix, _uri);
+		return null;
 	}
 
-	public string Prefix => this._prefix;
-
-	public string Uri => this._uri;
-
-	public override XmlNodeList Evaluate(XmlDocument doc, XmlNamespaceManager nm)
-	{
-		nm.AddNamespace(this._prefix, this._uri);
-		return (XmlNodeList)null;
-	}
-
-	public static XmlnsSchemaPointerPart ParseSchemaData(XPointerLexer lexer)
+	public static XmlnsSchemaPointerPart? ParseSchemaData(XPointerLexer lexer)
 	{
 		lexer.NextLexeme();
 		if (lexer.Kind != XPointerLexer.LexKind.NCName)
 		{
 			Console.Error.WriteLine("Syntax error in xmlns() schema data: Invalid token in XmlnsSchemaData");
-			return (XmlnsSchemaPointerPart)null;
+			return null;
 		}
 		string ncName = lexer.NCName;
 		lexer.SkipWhiteSpace();
@@ -37,7 +31,7 @@ internal class XmlnsSchemaPointerPart : PointerPart
 		if (lexer.Kind != XPointerLexer.LexKind.Eq)
 		{
 			Console.Error.WriteLine("Syntax error in xmlns() schema data: Invalid token in XmlnsSchemaData");
-			return (XmlnsSchemaPointerPart)null;
+			return null;
 		}
 		lexer.SkipWhiteSpace();
 		string escapedData;
@@ -48,7 +42,7 @@ internal class XmlnsSchemaPointerPart : PointerPart
 		catch (Exception ex)
 		{
 			Console.Error.WriteLine("Syntax error in xmlns() schema data: " + ex.Message);
-			return (XmlnsSchemaPointerPart)null;
+			return null;
 		}
 		return new XmlnsSchemaPointerPart(ncName, escapedData);
 	}

@@ -5,136 +5,147 @@ namespace DigitalProduction.Xml.XPointer;
 
 public class XPointerReader : XmlReader
 {
-	private XmlReader _reader;
-	private XmlReader _extReader;
-	private Uri _uri;
-	private string _xpointer;
-	private Stream _stream;
-	private XmlNameTable _nt;
-	private IEnumerator _pointedNodes;
+	private XmlReader?				_reader;
+	private readonly XmlReader?		_extReader;
+	private readonly Uri?			_uri;
+	private readonly string			_xpointer;
+	private readonly Stream?		_stream;
+	private readonly XmlNameTable	_nt;
+	private IEnumerator?			_pointedNodes;
 
 	public XPointerReader(Uri uri, Stream stream, XmlNameTable nt, string xpointer)
 	{
-		this._uri = uri;
-		this._stream = stream;
-		this._nt = nt;
-		this._xpointer = xpointer;
+		_uri		= uri;
+		_stream		= stream;
+		_nt			= nt;
+		_xpointer	= xpointer;
 	}
 
 	public XPointerReader(XmlReader reader, XmlNameTable nt, string xpointer)
 	{
-		this._extReader = reader;
-		this._xpointer = xpointer;
-		this._nt = nt;
+		_extReader	= reader;
+		_xpointer	= xpointer;
+		_nt			= nt;
 	}
 
-	public override int AttributeCount => this._reader.AttributeCount;
+	public override int AttributeCount => _reader?.AttributeCount ?? 0;
 
-	public override string BaseURI => this._reader.BaseURI;
+	public override string BaseURI => _reader?.BaseURI ?? string.Empty;
 
-	public override bool HasValue => this._reader.HasValue;
+	public override bool HasValue => _reader?.HasValue ?? false;
 
-	public override bool IsDefault => this._reader.IsDefault;
+	public override bool IsDefault => _reader?.IsDefault ?? false;
 
-	public override string Name => this._reader.Name;
+	public override string Name => _reader?.Name ?? string.Empty;
 
-	public override string LocalName => this._reader.LocalName;
+	public override string LocalName => _reader?.LocalName ?? string.Empty;
 
-	public override string NamespaceURI => this._reader.NamespaceURI;
+	public override string NamespaceURI => _reader?.NamespaceURI ?? string.Empty;
 
-	public override XmlNameTable NameTable => this._reader.NameTable;
+	public override XmlNameTable NameTable => _reader?.NameTable ?? _nt;
 
-	public override XmlNodeType NodeType => this._reader.NodeType;
+	public override XmlNodeType NodeType => _reader?.NodeType ?? XmlNodeType.None;
 
-	public override string Prefix => this._reader.Prefix;
+	public override string Prefix => _reader?.Prefix ?? string.Empty;
 
-	public override char QuoteChar => this._reader.QuoteChar;
+	public override char QuoteChar => _reader?.QuoteChar ?? char.MinValue;
 
 	public override void Close()
 	{
-		if (this._reader == null)
-			return;
-		this._reader.Close();
+		_reader?.Close();
 	}
 
-	public override int Depth => this._reader.Depth;
+	public override int Depth => _reader?.Depth ?? 0;
 
-	public override bool EOF => this._reader.EOF;
+	public override bool EOF => _reader?.EOF ?? true;
 
-	public override string GetAttribute(int i) => this._reader.GetAttribute(i);
+	public override string GetAttribute(int i) => _reader?.GetAttribute(i) ?? string.Empty;
 
-	public override string? GetAttribute(string name) => this._reader.GetAttribute(name);
+	public override string? GetAttribute(string name) => _reader?.GetAttribute(name);
 
 	public override string? GetAttribute(string name, string? namespaceURI)
 	{
-		return this._reader.GetAttribute(name, namespaceURI);
+		return _reader?.GetAttribute(name, namespaceURI);
 	}
 
-	public override bool IsEmptyElement => this._reader.IsEmptyElement;
+	public override bool IsEmptyElement => _reader?.IsEmptyElement ?? true;
 
-	public override string? LookupNamespace(string prefix) => this._reader.LookupNamespace(prefix);
+	public override string? LookupNamespace(string prefix) => _reader?.LookupNamespace(prefix);
 
-	public override void MoveToAttribute(int i) => this._reader.MoveToAttribute(i);
+	public override void MoveToAttribute(int i) => _reader?.MoveToAttribute(i);
 
-	public override bool MoveToAttribute(string name) => this._reader.MoveToAttribute(name);
+	public override bool MoveToAttribute(string name) => _reader?.MoveToAttribute(name) ?? false;
 
 	public override bool MoveToAttribute(string name, string? ns)
 	{
-		return this._reader.MoveToAttribute(name, ns);
+		return _reader?.MoveToAttribute(name, ns) ?? false;
 	}
 
-	public override bool MoveToElement() => this._reader.MoveToElement();
+	public override bool MoveToElement() => _reader?.MoveToElement() ?? false;
 
-	public override bool MoveToFirstAttribute() => this._reader.MoveToFirstAttribute();
+	public override bool MoveToFirstAttribute() => _reader?.MoveToFirstAttribute() ?? false;
 
-	public override bool MoveToNextAttribute() => this._reader.MoveToNextAttribute();
+	public override bool MoveToNextAttribute() => _reader?.MoveToNextAttribute() ?? false;
 
-	public override bool ReadAttributeValue() => this._reader.ReadAttributeValue();
+	public override bool ReadAttributeValue() => _reader?.ReadAttributeValue() ?? false;
 
-	public override ReadState ReadState => this._reader.ReadState;
+	public override ReadState ReadState => _reader?.ReadState ?? ReadState.Initial;
 
-	public override string this[int i] => this._reader[i];
+	public override string this[int i] => _reader?[i] ?? string.Empty;
 
-	public override string? this[string name] => this._reader[name];
+	public override string? this[string name] => _reader?[name];
 
-	public override string this[string name, string namespaceURI]
+	public override string this[string name, string? namespaceURI]
 	{
-		get => this._reader[name, namespaceURI];
+		get => _reader?[name, namespaceURI] ?? string.Empty;
 	}
 
-	public override void ResolveEntity() => this._reader.ResolveEntity();
+	public override void ResolveEntity() => _reader?.ResolveEntity();
 
-	public override string XmlLang => this._reader.XmlLang;
+	public override string XmlLang => _reader?.XmlLang ?? string.Empty;
 
-	public override XmlSpace XmlSpace => this._reader.XmlSpace;
+	public override XmlSpace XmlSpace => _reader?.XmlSpace ?? XmlSpace.None;
 
-	public override string Value => this._reader.Value;
+	public override string Value => _reader?.Value ?? string.Empty;
 
-	public override string ReadInnerXml() => this._reader.ReadInnerXml();
+	public override string ReadInnerXml() => _reader?.ReadInnerXml() ?? string.Empty;
 
-	public override string ReadOuterXml() => this._reader.ReadOuterXml();
+	public override string ReadOuterXml() => _reader?.ReadOuterXml() ?? string.Empty;
 
-	public override string ReadString() => this._reader.ReadString();
+	public override string ReadString() => _reader?.ReadString() ?? string.Empty;
 
 	public override bool Read()
 	{
-		if (this._reader == null)
+		if (_reader == null)
 		{
-			XmlDocument doc = new XmlDocument(this._nt);
-			doc.PreserveWhitespace = true;
-			if (this._extReader == null)
-				doc.Load((XmlReader)new XmlTextReader(this._uri.AbsoluteUri, (TextReader)new StreamReader(this._stream)));
+			XmlDocument doc = new(_nt)
+			{
+				PreserveWhitespace = true
+			};
+			if (_extReader == null)
+			{
+				doc.Load((XmlReader)new XmlTextReader(_uri!.AbsoluteUri, (TextReader)new StreamReader(_stream!)));
+			}
 			else
-				doc.Load(this._extReader);
-			this._pointedNodes = XPointerParser.ParseXPointer(this._xpointer).Evaluate(doc).GetEnumerator();
-			this._pointedNodes.MoveNext();
-			this._reader = (XmlReader)new XmlNodeReader(this._pointedNodes.Current as XmlNode);
+			{
+				doc.Load(_extReader);
+			}
+			_pointedNodes = XPointerParser.ParseXPointer(_xpointer).Evaluate(doc).GetEnumerator();
+			_pointedNodes.MoveNext();
+			_reader = new XmlNodeReader((XmlNode)_pointedNodes.Current);
 		}
-		if (this._reader.Read())
+
+		if (_reader.Read())
+		{
 			return true;
-		if (this._pointedNodes == null || !this._pointedNodes.MoveNext())
+		}
+
+		if (_pointedNodes == null || !_pointedNodes.MoveNext())
+		{
 			return false;
-		this._reader = (XmlReader)new XmlNodeReader(this._pointedNodes.Current as XmlNode);
-		return this._reader.Read();
+		}
+
+		_reader = new XmlNodeReader((XmlNode)_pointedNodes.Current);
+		return _reader.Read();
 	}
 }

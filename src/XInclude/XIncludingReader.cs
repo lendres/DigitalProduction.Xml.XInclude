@@ -15,12 +15,14 @@ o GetEntity on custom XmlResolver
 
 internal struct FallbackState
 {
-	//Fallback is being processed
-	public bool Fallbacking;
-	//xi:fallback element depth
-	public int FallbackDepth;
-	//Fallback processed flag
-	public bool FallbackProcessed;
+	// Fallback is being processed.
+	public bool	Fallbacking;
+
+	// xi:fallback element depth.
+	public int	FallbackDepth;
+
+	// Fallback processed flag.
+	public bool	FallbackProcessed;
 }
 
 /// <summary>
@@ -30,37 +32,40 @@ internal struct FallbackState
 public class XIncludingReader : XmlReader
 {
 	#region Private fields
-	//XInclude keywords
-	private XIncludeKeywords _keywords;
-	//Current reader
-	private XmlReader _reader;
-	//Stack of readers
-	private Stack _readers;
-	//Stack of Base URIs - to prevent circular inclusion
-	private Stack _baseURIs;
-	//Top base URI
-	private Uri _topBaseUri;
-	//Top-level included item flag
-	private bool _topLevel = false;
-	//Internal state
-	private XIncludingReaderState _state;
-	//Name table
-	private XmlNameTable _nameTable;
-	//Normalization
-	private bool _normalization;
-	//Whitespace handling
-	private WhitespaceHandling _whiteSpaceHandling;
-	//Emit relative xml:base URIs
-	private bool _relativeBaseUri = true;
-	//Current fallback state
-	private FallbackState _fallbackState;
-	//Previous fallback state (imagine enclosed deep xi:fallback/xi:include tree)
-	private FallbackState _prevFallbackState;
-	//XmlResolver to resolve URIs
-	XmlResolver _xmlResolver;
+
+	// XInclude keywords.
+	private readonly XIncludeKeywords	_keywords;
+	// Current reader.
+	private XmlReader					_reader;
+	// Stack of readers.
+	private readonly Stack				_readers				= new();
+	// Stack of Base URIs - to prevent circular inclusion.
+	private readonly Stack				_baseURIs				= new();
+	// Top base URI.
+	private readonly Uri				_topBaseUri;
+	// Top-level included item flag.
+	private bool						_topLevel				= false;
+	// Internal state.
+	private XIncludingReaderState		_state;
+	// Name table.
+	private readonly XmlNameTable		_nameTable;
+	// Normalization.
+	private bool						_normalization;
+	// Whitespace handling.
+	private WhitespaceHandling			_whiteSpaceHandling;
+	// Emit relative xml:base URIs.
+	private bool						_relativeBaseUri		= true;
+	// Current fallback state.
+	private FallbackState				_fallbackState;
+	// Previous fallback state (imagine enclosed deep xi:fallback/xi:include tree).
+	private FallbackState				_prevFallbackState;
+	// XmlResolver to resolve URIs.
+	XmlResolver?						_xmlResolver;
+
 	#endregion
 
 	#region Constructors
+
 	/// <summary>
 	/// Creates new instance of <c>XIncludingReader</c> class with
 	/// specified underlying <c>XmlReader</c> reader.
@@ -68,15 +73,17 @@ public class XIncludingReader : XmlReader
 	/// <param name="reader">Underlying reader to read from.</param>
 	public XIncludingReader(XmlReader reader)
 	{
-		XmlTextReader? xtr = reader as XmlTextReader;
-		if (xtr != null)
+		if (reader is XmlTextReader xtr)
 		{
 			_normalization = xtr.Normalization;
 			_whiteSpaceHandling = xtr.WhitespaceHandling;
 		}
-		_reader = reader;
-		_nameTable = reader.NameTable;
-		Init();
+		_reader		= reader;
+		_nameTable	= reader.NameTable;
+		_keywords	= new XIncludeKeywords(NameTable);
+		_topBaseUri	= new Uri(_reader.BaseURI);
+		_baseURIs.Push(_topBaseUri);
+		_state		= XIncludingReaderState.Default;
 	}
 
 	/// <summary>
@@ -84,7 +91,10 @@ public class XIncludingReader : XmlReader
 	/// specified URL.
 	/// </summary>
 	/// <param name="url">Document location.</param>
-	public XIncludingReader(string url) : this(new XmlTextReader(url)) { }
+	public XIncludingReader(string url) :
+		this(new XmlTextReader(url))
+	{
+	}
 
 	/// <summary>
 	/// Creates new instance of <c>XIncludingReader</c> class with
@@ -94,14 +104,18 @@ public class XIncludingReader : XmlReader
 	/// <param name="nt">Name table.</param>
 	public XIncludingReader(string url, XmlNameTable nt) :
 		this(new XmlTextReader(url, nt))
-	{ }
+	{
+	}
 
 	/// <summary>
 	/// Creates new instance of <c>XIncludingReader</c> class with
 	/// specified <c>TextReader</c> reader.
 	/// </summary>
 	/// <param name="reader"><c>TextReader</c>.</param>
-	public XIncludingReader(TextReader reader) : this(new XmlTextReader(reader)) { }
+	public XIncludingReader(TextReader reader) :
+		this(new XmlTextReader(reader))
+	{
+	}
 
 	/// <summary>
 	/// Creates new instance of <c>XIncludingReader</c> class with
@@ -111,14 +125,18 @@ public class XIncludingReader : XmlReader
 	/// <param name="nt">Nametable.</param>
 	public XIncludingReader(TextReader reader, XmlNameTable nt) :
 		this(new XmlTextReader(reader, nt))
-	{ }
+	{
+	}
 
 	/// <summary>
 	/// Creates new instance of <c>XIncludingReader</c> class with
 	/// specified <c>Stream</c>.
 	/// </summary>
 	/// <param name="input"><c>Stream</c>.</param>
-	public XIncludingReader(Stream input) : this(new XmlTextReader(input)) { }
+	public XIncludingReader(Stream input) :
+		this(new XmlTextReader(input))
+	{
+	}
 
 	/// <summary>
 	/// Creates new instance of <c>XIncludingReader</c> class with
@@ -128,22 +146,10 @@ public class XIncludingReader : XmlReader
 	/// <param name="nt">Nametable</param>
 	public XIncludingReader(Stream input, XmlNameTable nt) :
 		this(new XmlTextReader(input, nt))
-	{ }
+	{
+	}
 
 	#endregion
-
-	/// <summary>
-	/// Internal initializer.
-	/// </summary>	    	
-	private void Init()
-	{
-		_keywords = new XIncludeKeywords(NameTable);
-		_baseURIs = new Stack();
-		_topBaseUri = new Uri(_reader.BaseURI);
-		_baseURIs.Push(_topBaseUri);
-		_readers = new Stack();
-		_state = XIncludingReaderState.Default;
-	}
 
 	#region XmlReader's overriden members
 
@@ -151,30 +157,29 @@ public class XIncludingReader : XmlReader
 	{
 		get
 		{
-			if (_topLevel && _reader.GetAttribute(_keywords.Base, _keywords.XmlNamespace)==null)
+			if (_topLevel && _reader.GetAttribute(_keywords.Base, _keywords.XmlNamespace) == null)
+			{
 				return _reader.AttributeCount+1;
+			}
 			else
+			{
 				return _reader.AttributeCount;
+			}
 		}
 	}
 
-	public override string BaseURI
-	{
-		get { return _reader.BaseURI; }
-	}
+	public override string BaseURI { get => _reader.BaseURI; }
 
 	public override bool HasValue
 	{
 		get
 		{
-			switch (_state)
+			return _state switch
 			{
-				case XIncludingReaderState.ExposingXmlBaseAttr:
-				case XIncludingReaderState.ExposingXmlBaseAttrValue:
-					return true;
-				default:
-					return _reader.HasValue;
-			}
+				XIncludingReaderState.ExposingXmlBaseAttr => true,
+				XIncludingReaderState.ExposingXmlBaseAttrValue => true,
+				_ => _reader.HasValue,
+			};
 		}
 	}
 
@@ -182,15 +187,12 @@ public class XIncludingReader : XmlReader
 	{
 		get
 		{
-			switch (_state)
+			return _state switch
 			{
-				case XIncludingReaderState.ExposingXmlBaseAttr:
-				case XIncludingReaderState.ExposingXmlBaseAttrValue:
-					//TODO: May be wrong if xml:base exists and it does default
-					return false;
-				default:
-					return _reader.IsDefault;
-			}
+				XIncludingReaderState.ExposingXmlBaseAttr => false,
+				XIncludingReaderState.ExposingXmlBaseAttrValue => false, //TODO: May be wrong if xml:base exists and it does default
+				_ => _reader.IsDefault,
+			};
 		}
 	}
 
@@ -198,15 +200,12 @@ public class XIncludingReader : XmlReader
 	{
 		get
 		{
-			switch (_state)
+			return _state switch
 			{
-				case XIncludingReaderState.ExposingXmlBaseAttr:
-					return _keywords.XmlBase;
-				case XIncludingReaderState.ExposingXmlBaseAttrValue:
-					return String.Empty;
-				default:
-					return _reader.Name;
-			}
+				XIncludingReaderState.ExposingXmlBaseAttr => _keywords.XmlBase,
+				XIncludingReaderState.ExposingXmlBaseAttrValue => String.Empty,
+				_ => _reader.Name,
+			};
 		}
 	}
 
@@ -214,15 +213,12 @@ public class XIncludingReader : XmlReader
 	{
 		get
 		{
-			switch (_state)
+			return _state switch
 			{
-				case XIncludingReaderState.ExposingXmlBaseAttr:
-					return _keywords.Base;
-				case XIncludingReaderState.ExposingXmlBaseAttrValue:
-					return String.Empty;
-				default:
-					return _reader.LocalName;
-			}
+				XIncludingReaderState.ExposingXmlBaseAttr => _keywords.Base,
+				XIncludingReaderState.ExposingXmlBaseAttrValue => String.Empty,
+				_ => _reader.LocalName,
+			};
 		}
 	}
 
@@ -230,36 +226,27 @@ public class XIncludingReader : XmlReader
 	{
 		get
 		{
-			switch (_state)
+			return _state switch
 			{
-				case XIncludingReaderState.ExposingXmlBaseAttr:
-					return _keywords.XmlNamespace;
-				case XIncludingReaderState.ExposingXmlBaseAttrValue:
-					return String.Empty;
-				default:
-					return _reader.NamespaceURI;
-			}
+				XIncludingReaderState.ExposingXmlBaseAttr => _keywords.XmlNamespace,
+				XIncludingReaderState.ExposingXmlBaseAttrValue => String.Empty,
+				_ => _reader.NamespaceURI,
+			};
 		}
 	}
 
-	public override XmlNameTable NameTable
-	{
-		get { return _nameTable; }
-	}
+	public override XmlNameTable NameTable { get => _nameTable; }
 
 	public override XmlNodeType NodeType
 	{
 		get
 		{
-			switch (_state)
+			return _state switch
 			{
-				case XIncludingReaderState.ExposingXmlBaseAttr:
-					return XmlNodeType.Attribute;
-				case XIncludingReaderState.ExposingXmlBaseAttrValue:
-					return XmlNodeType.Text;
-				default:
-					return _reader.NodeType;
-			}
+				XIncludingReaderState.ExposingXmlBaseAttr => XmlNodeType.Attribute,
+				XIncludingReaderState.ExposingXmlBaseAttrValue => XmlNodeType.Text,
+				_ => _reader.NodeType,
+			};
 		}
 	}
 
@@ -267,15 +254,12 @@ public class XIncludingReader : XmlReader
 	{
 		get
 		{
-			switch (_state)
+			return _state switch
 			{
-				case XIncludingReaderState.ExposingXmlBaseAttr:
-					return _keywords.Xml;
-				case XIncludingReaderState.ExposingXmlBaseAttrValue:
-					return String.Empty;
-				default:
-					return _reader.Prefix;
-			}
+				XIncludingReaderState.ExposingXmlBaseAttr => _keywords.Xml,
+				XIncludingReaderState.ExposingXmlBaseAttrValue => String.Empty,
+				_ => _reader.Prefix,
+			};
 		}
 	}
 
@@ -283,67 +267,61 @@ public class XIncludingReader : XmlReader
 	{
 		get
 		{
-			switch (_state)
+			return _state switch
 			{
-				case XIncludingReaderState.ExposingXmlBaseAttr:
-					return '"';
-				default:
-					return _reader.QuoteChar;
-			}
+				XIncludingReaderState.ExposingXmlBaseAttr => '"',
+				_ => _reader.QuoteChar,
+			};
 		}
 	}
 
 	public override void Close()
 	{
 		_reader.Close();
-		//Close all readers in the stack
-		while (_readers.Count>0)
+		// Close all readers in the stack.
+		while (_readers.Count > 0)
 		{
-			_reader = (XmlReader)_readers.Pop();
+			_reader = (XmlReader)_readers.Pop()!;
 			_reader.Close();
 		}
 	}
 
-	public override int Depth
-	{
-		get { return _reader.Depth; }
-	}
+	public override int Depth { get => _reader.Depth; }
 
-	public override bool EOF
-	{
-		get { return _reader.EOF; }
-	}
+	public override bool EOF { get =>  _reader.EOF; }
 
 	public override string GetAttribute(int i)
 	{
 		return _reader.GetAttribute(i);
 	}
 
-	public override string GetAttribute(string name)
+	public override string? GetAttribute(string name)
 	{
-		if (_topLevel &&
-			XIncludeKeywords.Equals(name, _keywords.XmlBase))
+		if (_topLevel && XIncludeKeywords.Equals(name, _keywords.XmlBase))
+		{
 			return _reader.BaseURI;
+		}
 		else
+		{
 			return _reader.GetAttribute(name);
+		}
 	}
 
-	public override string GetAttribute(string name, string namespaceURI)
+	public override string? GetAttribute(string name, string? namespaceURI)
 	{
-		if (_topLevel &&
-			XIncludeKeywords.Equals(name, _keywords.Base) &&
-			XIncludeKeywords.Equals(namespaceURI, _keywords.XmlNamespace))
+		if (_topLevel && XIncludeKeywords.Equals(name, _keywords.Base) && XIncludeKeywords.Equals(namespaceURI ?? string.Empty, _keywords.XmlNamespace))
+		{
 			return _reader.BaseURI;
+		}
 		else
+		{
 			return _reader.GetAttribute(name, namespaceURI);
+		}
 	}
 
-	public override bool IsEmptyElement
-	{
-		get { return _reader.IsEmptyElement; }
-	}
+	public override bool IsEmptyElement { get => _reader.IsEmptyElement; }
 
-	public override String LookupNamespace(String prefix)
+	public override String? LookupNamespace(String prefix)
 	{
 		return _reader.LookupNamespace(prefix);
 	}
@@ -355,27 +333,28 @@ public class XIncludingReader : XmlReader
 
 	public override bool MoveToAttribute(string name)
 	{
-		if (_topLevel &&
-			XIncludeKeywords.Equals(name, _keywords.XmlBase))
+		if (_topLevel && XIncludeKeywords.Equals(name, _keywords.XmlBase))
 		{
 			_state = XIncludingReaderState.ExposingXmlBaseAttr;
 			return true;
 		}
 		else
+		{
 			return _reader.MoveToAttribute(name);
+		}
 	}
 
-	public override bool MoveToAttribute(string name, string ns)
+	public override bool MoveToAttribute(string name, string? ns)
 	{
-		if (_topLevel &&
-			XIncludeKeywords.Equals(name, _keywords.Base) &&
-			XIncludeKeywords.Equals(ns, _keywords.XmlNamespace))
+		if (_topLevel && XIncludeKeywords.Equals(name, _keywords.Base) && XIncludeKeywords.Equals(ns ?? string.Empty, _keywords.XmlNamespace))
 		{
 			_state = XIncludingReaderState.ExposingXmlBaseAttr;
 			return true;
 		}
 		else
+		{
 			return _reader.MoveToAttribute(name, ns);
+		}
 	}
 
 	public override bool MoveToElement()
@@ -392,7 +371,9 @@ public class XIncludingReader : XmlReader
 			return true;
 		}
 		else
+		{
 			return _reader.MoveToFirstAttribute();
+		}
 	}
 
 	public override bool MoveToNextAttribute()
@@ -413,8 +394,7 @@ public class XIncludingReader : XmlReader
 					return true;
 			}
 		}
-		else if (_topLevel && XIncludeKeywords.Equals(_reader.LocalName, _keywords.Base) &&
-				XIncludeKeywords.Equals(_reader.NamespaceURI, _keywords.XmlNamespace))
+		else if (_topLevel && XIncludeKeywords.Equals(_reader.LocalName, _keywords.Base) && XIncludeKeywords.Equals(_reader.NamespaceURI, _keywords.XmlNamespace))
 		{
 			//There is xml:base already - substitute its value    
 			if (res)
@@ -430,7 +410,9 @@ public class XIncludingReader : XmlReader
 			}
 		}
 		else
+		{
 			return res;
+		}
 	}
 
 	public override bool ReadAttributeValue()
@@ -447,40 +429,22 @@ public class XIncludingReader : XmlReader
 		}
 	}
 
-	public override ReadState ReadState
-	{
-		get { return _reader.ReadState; }
-	}
+	public override ReadState ReadState { get => _reader.ReadState; }
 
-	public override String this[int i]
-	{
-		get { return GetAttribute(i); }
-	}
+	public override String this[int i] { get => GetAttribute(i); }
 
-	public override string this[string name]
-	{
-		get { return GetAttribute(name); }
-	}
+	public override string? this[string name] { get => GetAttribute(name); }
 
-	public override string this[string name, string namespaceURI]
-	{
-		get { return GetAttribute(name, namespaceURI); }
-	}
+	public override string? this[string name, string? namespaceURI] { get => GetAttribute(name, namespaceURI); }
 
 	public override void ResolveEntity()
 	{
 		_reader.ResolveEntity();
 	}
 
-	public override string XmlLang
-	{
-		get { return _reader.XmlLang; }
-	}
+	public override string XmlLang { get => _reader.XmlLang; }
 
-	public override XmlSpace XmlSpace
-	{
-		get { return _reader.XmlSpace; }
-	}
+	public override XmlSpace XmlSpace { get => _reader.XmlSpace; }
 
 	public override string Value
 	{
@@ -492,17 +456,19 @@ public class XIncludingReader : XmlReader
 				case XIncludingReaderState.ExposingXmlBaseAttrValue:
 					if (_reader.BaseURI == String.Empty)
 					{
-						//Stupid reader
-						Uri baseUri = (Uri)_baseURIs.Peek();
-						return baseUri.AbsoluteUri;
+						// Stupid reader.
+						Uri? baseUri = _baseURIs.Peek() as Uri;
+						return baseUri?.AbsoluteUri ?? string.Empty;
 					}
 					if (_relativeBaseUri)
 					{
-						Uri baseUri = new Uri(_reader.BaseURI);
-						return _topBaseUri.MakeRelative(baseUri);
+						Uri baseUri = new(_reader.BaseURI);
+						return _topBaseUri.MakeRelativeUri(baseUri).ToString();
 					}
 					else
+					{
 						return _reader.BaseURI;
+					}
 				default:
 					return _reader.Value;
 			}
@@ -511,51 +477,39 @@ public class XIncludingReader : XmlReader
 
 	public override string ReadInnerXml()
 	{
-		switch (_state)
+		return _state switch
 		{
-			case XIncludingReaderState.ExposingXmlBaseAttr:
-				return _reader.BaseURI;
-			case XIncludingReaderState.ExposingXmlBaseAttrValue:
-				return String.Empty;
-			default:
-				return _reader.ReadInnerXml();
-		}
+			XIncludingReaderState.ExposingXmlBaseAttr => _reader.BaseURI,
+			XIncludingReaderState.ExposingXmlBaseAttrValue => String.Empty,
+			_ => _reader.ReadInnerXml(),
+		};
 	}
 
 	public override string ReadOuterXml()
 	{
-		switch (_state)
+		return _state switch
 		{
-			case XIncludingReaderState.ExposingXmlBaseAttr:
-				return @"xml:base="" + _reader.BaseURI + @""";
-			case XIncludingReaderState.ExposingXmlBaseAttrValue:
-				return String.Empty;
-			default:
-				return _reader.ReadOuterXml();
-		}
+			XIncludingReaderState.ExposingXmlBaseAttr => @"xml:base="" + _reader.BaseURI + @""",
+			XIncludingReaderState.ExposingXmlBaseAttrValue => String.Empty,
+			_ => _reader.ReadOuterXml(),
+		};
 	}
 
 	public override string ReadString()
 	{
-		switch (_state)
+		return _state switch
 		{
-			case XIncludingReaderState.ExposingXmlBaseAttr:
-				return String.Empty;
-			case XIncludingReaderState.ExposingXmlBaseAttrValue:
-				return _reader.BaseURI;
-			default:
-				return _reader.ReadString();
-		}
+			XIncludingReaderState.ExposingXmlBaseAttr => String.Empty,
+			XIncludingReaderState.ExposingXmlBaseAttrValue => _reader.BaseURI,
+			_ => _reader.ReadString(),
+		};
 	}
 
 	// Binary content access methods.
 	// Added by LAE to allow including reader to read binary content.  Code taken from XmlTextReader.cs source code in C# .NET and adapted to
 	// use "_reader" instead of "impl."
 	// http://www.dotnetframework.org/default.aspx/Net/Net/3@5@50727@3053/DEVDIV/depot/DevDiv/releases/whidbey/netfxsp/ndp/fx/src/Xml/System/Xml/Core/XmlTextReader@cs/1/XmlTextReader@cs
-	public override bool CanReadBinaryContent
-	{
-		get { return true; }
-	}
+	public override bool CanReadBinaryContent { get => true; }
 
 	public override int ReadContentAsBase64(byte[] buffer, int index, int count)
 	{
@@ -584,9 +538,8 @@ public class XIncludingReader : XmlReader
 		bool baseRead = _reader.Read();
 		if (baseRead)
 		{
-			//If we are including and including reader is at 0 depth - 
-			//we are in top level included item
-			_topLevel = (_readers.Count>0 && _reader.Depth == 0) ? true : false;
+			// If we are including and including reader is at 0 depth - we are in top level included item.
+			_topLevel = (_readers.Count>0 && _reader.Depth == 0);
 			if (_topLevel && _reader.NodeType == XmlNodeType.Attribute)
 			{
 				//Attempt to include an attribute
@@ -602,7 +555,7 @@ public class XIncludingReader : XmlReader
 					return _readers.Count>0 ? Read() : baseRead;
 				case XmlNodeType.Element:
 					//Check for xi:include
-					if (IsIncludeElement(_reader))
+					if (IsIncludeElement())
 					{
 						//xi:include element found
 						//Save current reader to possible fallback processing
@@ -611,9 +564,9 @@ public class XIncludingReader : XmlReader
 						{
 							return ProcessIncludeElement();
 						}
-						catch (FatalException fe)
+						catch (FatalException)
 						{
-							throw fe;
+							throw;
 						}
 						catch (Exception e)
 						{
@@ -631,25 +584,28 @@ public class XIncludingReader : XmlReader
 						}
 						//No, it's not xi:include, check it for xi:fallback    
 					}
-					else if (IsFallbackElement(_reader))
+					else if (IsFallbackElement())
 					{
 						//Found xi:fallback not child of xi:include
-						if (_reader is XmlTextReader)
+						if (_reader is XmlTextReader r)
 						{
-							XmlTextReader r = _reader as XmlTextReader;
 							throw new SyntaxError("xi:fallback element must be direct child of xi:include element."
 								+ _reader.BaseURI.ToString() + ", Line " + r.LineNumber + ", Position " + r.LinePosition);
 						}
 						else
+						{
 							throw new SyntaxError("xi:fallback element must be direct child of xi:include element." + _reader.BaseURI.ToString());
+						}
 					}
 					else
+					{
 						goto default;
+					}
 				case XmlNodeType.EndElement:
 					//Looking for end of xi:fallback
 					if (_fallbackState.Fallbacking &&
 						_reader.Depth == _fallbackState.FallbackDepth &&
-						IsFallbackElement(_reader))
+						IsFallbackElement())
 					{
 						//End of fallback processing
 						_fallbackState.FallbackProcessed = true;
@@ -657,7 +613,9 @@ public class XIncludingReader : XmlReader
 						return ProcessFallback(_reader.Depth-1, null);
 					}
 					else
+					{
 						goto default;
+					}
 				default:
 					return baseRead;
 			}
@@ -666,62 +624,56 @@ public class XIncludingReader : XmlReader
 		{
 			//No more input - finish possible xi:include processing
 			if (_topLevel)
+			{
 				_topLevel = false;
+			}
+
 			if (_readers.Count > 0)
 			{
 				//Pop BaseURI
 				_baseURIs.Pop();
 				_reader.Close();
 				//Pop previous reader
-				_reader = (XmlReader)_readers.Pop();
+				_reader = (XmlReader)_readers.Pop()!;
 				//Successful include - skip xi:include content
 				if (!_reader.IsEmptyElement)
+				{
 					CheckAndSkipContent();
+				}
 				return Read();
 			}
 			else
+			{
 				//That's all, folks
 				return false;
+			}
 		}
 	} // Read()
 
 	#endregion
 
 	#region Public members
-	public bool Normalization
-	{
-		get { return _normalization; }
-		set { _normalization = value; }
-	}
 
-	public WhitespaceHandling WhitespaceHandling
-	{
-		get { return _whiteSpaceHandling; }
-		set { _whiteSpaceHandling = value; }
-	}
+	public bool Normalization { get => _normalization; set => _normalization = value; }
+
+	public WhitespaceHandling WhitespaceHandling { get => _whiteSpaceHandling; set => _whiteSpaceHandling = value; }
 
 	/// <summary>
 	/// XmlResolver to resolve external URI references
 	/// </summary>
-	public XmlResolver XmlResolver
-	{
-		set { _xmlResolver = value; }
-	}
+	public XmlResolver XmlResolver { set => _xmlResolver = value; }
 
 	/// <summary>
 	/// Flag indicating whether to emit xml:base as relative URI.
 	/// Note, it's true by default
 	/// </summary>
-	public bool RelativeBaseUri
-	{
-		get { return _relativeBaseUri; }
-		set { _relativeBaseUri = value; }
-	}
+	public bool RelativeBaseUri { get => _relativeBaseUri; set => _relativeBaseUri = value; }
+
 	#endregion
 
 	#region Private methods
 
-	private bool IsIncludeElement(XmlReader r)
+	private bool IsIncludeElement()
 	{
 		if (
 			(
@@ -729,12 +681,16 @@ public class XIncludingReader : XmlReader
 				XIncludeKeywords.Equals(_reader.NamespaceURI, _keywords.OldXIncludeNamespace)
 			) &&
 				XIncludeKeywords.Equals(_reader.LocalName, _keywords.Include))
+		{
 			return true;
+		}
 		else
+		{
 			return false;
+		}
 	}
 
-	private bool IsFallbackElement(XmlReader r)
+	private bool IsFallbackElement()
 	{
 		if (
 			(
@@ -742,13 +698,16 @@ public class XIncludingReader : XmlReader
 			XIncludeKeywords.Equals(_reader.NamespaceURI, _keywords.OldXIncludeNamespace)
 			) &&
 			XIncludeKeywords.Equals(_reader.LocalName, _keywords.Fallback))
+		{
 			return true;
+		}
 		else
+		{
 			return false;
+		}
 	}
 
-	internal static Stream GetResource(string href, Uri includeLocation,
-		string accept, string acceptCharset, string acceptLanguage, out WebResponse response)
+	internal static Stream GetResource(string href, Uri includeLocation, string accept, string acceptCharset, string acceptLanguage, out WebResponse response)
 	{
 		WebRequest wReq;
 		try
@@ -763,31 +722,43 @@ public class XIncludingReader : XmlReader
 		{
 			throw new ResourceException("Security exception while fetching '" + href + "'", se);
 		}
-		//Add accept headers if this is HTTP request
-		HttpWebRequest httpReq = wReq as HttpWebRequest;
+		// Add accept headers if this is HTTP request.
+		HttpWebRequest httpReq = (HttpWebRequest)wReq;
 		if (httpReq != null)
 		{
 			if (accept != null)
 			{
 				if (httpReq.Accept == null || httpReq.Accept == String.Empty)
+				{
 					httpReq.Accept = accept;
+				}
 				else
-					httpReq.Accept += ","+accept;
+				{
+					httpReq.Accept += "," + accept;
+				}
 			}
 			if (acceptCharset != null)
 			{
 				if (httpReq.Headers["Accept-Charset"] == null)
+				{
 					httpReq.Headers.Add("Accept-Charset", acceptCharset);
+				}
 				else
+				{
 					httpReq.Headers["Accept-Charset"] += ","+acceptCharset;
+				}
 			}
 			if (acceptLanguage != null)
 			{
 				httpReq.Headers.Add("Accept-Language", "ru");
 				if (httpReq.Headers["Accept-Language"] == null)
+				{
 					httpReq.Headers.Add("Accept-Language", acceptLanguage);
+				}
 				else
+				{
 					httpReq.Headers["Accept-Language"] += ","+acceptLanguage;
+				}
 			}
 		}
 		try
@@ -806,21 +777,22 @@ public class XIncludingReader : XmlReader
 	/// </summary>		
 	private bool ProcessIncludeElement()
 	{
-		string href = _reader.GetAttribute(_keywords.Href);
-		string xpointer = _reader.GetAttribute(_keywords.Xpointer);
+		string href = _reader.GetAttribute(_keywords.Href) ?? string.Empty;
+		string? xpointer = _reader.GetAttribute(_keywords.Xpointer);
 		if (href == null)
 		{
 			if (xpointer == null)
 			{
 				//Both href and xpointer attributes are absent, critical error
-				if (_reader is XmlTextReader)
+				if (_reader is XmlTextReader r)
 				{
-					XmlTextReader r = _reader as XmlTextReader;
 					throw new MissingHrefAndXpointerException("'href' or 'xpointer' attribute is required on xi:include element. "
 						+ _reader.BaseURI.ToString() + ", Line " + r.LineNumber + ", Position " + r.LinePosition);
 				}
 				else
+				{
 					throw new MissingHrefAndXpointerException("'href' or 'xpointer' attribute is required on xi:include element. " + _reader.BaseURI.ToString());
+				}
 			}
 			else
 			{
@@ -828,7 +800,7 @@ public class XIncludingReader : XmlReader
 				throw new NotImplementedException("Intra-document references are not implemented yet!");
 			}
 		}
-		string parse = _reader.GetAttribute(_keywords.Parse);
+		string? parse = _reader.GetAttribute(_keywords.Parse);
 		if (parse == null || parse.Equals(_keywords.Xml))
 		{
 			//Include document as XML                                
@@ -836,19 +808,23 @@ public class XIncludingReader : XmlReader
 			if (_xmlResolver == null)
 			{
 				//No custom resolver
-				WebResponse wRes;
 				Stream stream =  GetResource(href, includeLocation,
-					_reader.GetAttribute(_keywords.Accept),
-					_reader.GetAttribute(_keywords.AcceptCharset),
-					_reader.GetAttribute(_keywords.AcceptLanguage), out wRes);
+					_reader.GetAttribute(_keywords.Accept) ?? string.Empty,
+					_reader.GetAttribute(_keywords.AcceptCharset) ?? string.Empty,
+					_reader.GetAttribute(_keywords.AcceptLanguage) ?? string.Empty,
+					out WebResponse wRes);
 				//Push new base URI to the stack
 				_baseURIs.Push(includeLocation);
 				//Push current reader to the stack
 				_readers.Push(_reader);
 				if (xpointer != null)
+				{
 					_reader = new XPointerReader(wRes.ResponseUri, stream, _nameTable, xpointer);
+				}
 				else if (includeLocation.Fragment != String.Empty)
-					_reader = new XPointerReader(wRes.ResponseUri, stream, _nameTable, includeLocation.Fragment.Substring(1));
+				{
+					_reader = new XPointerReader(wRes.ResponseUri, stream, _nameTable, includeLocation.Fragment[1..]);
+				}
 				else
 				{
 					_reader = new XmlTextReader(wRes.ResponseUri.AbsoluteUri, stream, _nameTable);
@@ -861,7 +837,7 @@ public class XIncludingReader : XmlReader
 			else
 			{
 				//Custom resolver provided, let's ask him
-				object resource;
+				object? resource;
 				try
 				{
 					resource = _xmlResolver.GetEntity(includeLocation, null, null);
@@ -871,16 +847,24 @@ public class XIncludingReader : XmlReader
 					throw new ResourceException("An exception has occured during GetEntity call to custom XmlResolver", e);
 				}
 				if (resource == null)
+				{
 					throw new ResourceException("Custom XmlResolver returned null");
+				}
 				//Ok, we accept Stream and XmlReader only
 				XmlReader r;
-				if (resource is Stream)
-					r = new XmlTextReader(includeLocation.AbsoluteUri, (Stream)resource, _nameTable);
-				else if (resource is XmlReader)
-					r = (XmlReader)resource;
+				if (resource is Stream stream)
+				{
+					r = new XmlTextReader(includeLocation.AbsoluteUri, stream, _nameTable);
+				}
+				else if (resource is XmlReader reader)
+				{
+					r = reader;
+				}
 				else
+				{
 					//Unsupported type
 					throw new ResourceException("Custom XmlResolver returned object of unsupported type.");
+				}
 				//Push new base URI to the stack
 				_baseURIs.Push(includeLocation);
 				//Push current reader to the stack
@@ -896,7 +880,7 @@ public class XIncludingReader : XmlReader
 		else if (parse.Equals(_keywords.Text))
 		{
 			//Include document as text                            
-			string encoding = GetAttribute(_keywords.Encoding);
+			string encoding = GetAttribute(_keywords.Encoding) ?? string.Empty;
 			Uri includeLocation = ResolveHref(href);
 			//Push new base URI to the stack
 			_baseURIs.Push(includeLocation);
@@ -904,23 +888,23 @@ public class XIncludingReader : XmlReader
 			_readers.Push(_reader);
 			_reader = new TextIncludingReader(
 				includeLocation, encoding,
-				_reader.GetAttribute(_keywords.Accept),
-				_reader.GetAttribute(_keywords.AcceptCharset),
-				_reader.GetAttribute(_keywords.AcceptLanguage)
+				_reader.GetAttribute(_keywords.Accept) ?? string.Empty,
+				_reader.GetAttribute(_keywords.AcceptCharset) ?? string.Empty,
+				_reader.GetAttribute(_keywords.AcceptLanguage) ?? string.Empty
 			);
 			return Read();
 		}
 		else
 		{
 			//Unknown "parse" attribute value, critical error
-			if (_reader is XmlTextReader)
+			if (_reader is XmlTextReader r)
 			{
-				XmlTextReader r = _reader as XmlTextReader;
-				throw new UnknownParseAttributeValueException(parse, _reader.BaseURI.ToString(),
-					r.LineNumber, r.LinePosition);
+				throw new UnknownParseAttributeValueException(parse, _reader.BaseURI.ToString(), r.LineNumber, r.LinePosition);
 			}
 			else
+			{
 				throw new UnknownParseAttributeValueException(parse);
+			}
 		}
 	}
 
@@ -950,14 +934,14 @@ public class XIncludingReader : XmlReader
 		//Check circular inclusion
 		if (_baseURIs.Contains(includeLocation))
 		{
-			if (_reader is XmlTextReader)
+			if (_reader is XmlTextReader reader)
 			{
-				XmlTextReader reader = _reader as XmlTextReader;
-				throw new CircularInclusionException(includeLocation,
-					BaseURI.ToString(), reader.LineNumber, reader.LinePosition);
+				throw new CircularInclusionException(includeLocation, BaseURI.ToString(), reader.LineNumber, reader.LinePosition);
 			}
 			else
+			{
 				throw new CircularInclusionException(includeLocation);
+			}
 		}
 		return includeLocation;
 	}
@@ -979,13 +963,13 @@ public class XIncludingReader : XmlReader
 	/// Fallback processing.
 	/// </summary>
 	/// <param name="depth"><c>xi:include</c> depth level.</param>    
-	/// <param name="e">Resource error, which caused this processing.</param>
+	/// <param name="exception">Resource error, which caused this processing.</param>
 	/// <remarks>When inluding fails due to any resource error, <c>xi:inlcude</c> 
 	/// element content is processed as follows: each child <c>xi:include</c> - 
 	/// fatal error, more than one child <c>xi:fallback</c> - fatal error. No 
 	/// <c>xi:fallback</c> - the resource error results in a fatal error.
 	/// Content of first <c>xi:fallback</c> element is included in a usual way.</remarks>
-	private bool ProcessFallback(int depth, Exception e)
+	private bool ProcessFallback(int depth, Exception? exception)
 	{
 		//Read to the xi:include end tag
 		while (_reader.Read() && depth<_reader.Depth)
@@ -993,32 +977,30 @@ public class XIncludingReader : XmlReader
 			switch (_reader.NodeType)
 			{
 				case XmlNodeType.Element:
-					if (IsIncludeElement(_reader))
+					if (IsIncludeElement())
 					{
 						//xi:include child of xi:include - fatal error
-						if (_reader is XmlTextReader)
+						if (_reader is XmlTextReader r)
 						{
-							XmlTextReader r = _reader as XmlTextReader;
-							throw new SyntaxError("xi:include element cannot be child of xi:include element."
-								+ BaseURI.ToString() + ", Line " + r.LineNumber + ", Position " + r.LinePosition);
+							throw new SyntaxError("xi:include element cannot be child of xi:include element." + BaseURI.ToString() + ", Line " + r.LineNumber + ", Position " + r.LinePosition);
 						}
 						else
 							throw new SyntaxError("xi:include element cannot be child of xi:include element.");
 					}
-					if (IsFallbackElement(_reader))
+					if (IsFallbackElement())
 					{
 						//Found xi:fallback
 						if (_fallbackState.FallbackProcessed)
 						{
-							if (_reader is XmlTextReader)
+							//Two xi:fallback
+							if (_reader is XmlTextReader r)
 							{
-								//Two xi:fallback
-								XmlTextReader r = _reader as XmlTextReader;
-								throw new SyntaxError("xi:include element cannot contain more than one xi:fallback element."
-									+ BaseURI.ToString() + ", Line " + r.LineNumber + ", Position " + r.LinePosition);
+								throw new SyntaxError("xi:include element cannot contain more than one xi:fallback element." + BaseURI.ToString() + ", Line " + r.LineNumber + ", Position " + r.LinePosition);
 							}
 							else
+							{
 								throw new SyntaxError("xi:include element cannot contain more than one xi:fallback element.");
+							}
 						}
 						if (_reader.IsEmptyElement)
 						{
@@ -1040,8 +1022,17 @@ public class XIncludingReader : XmlReader
 		}
 		//xi:include content is read
 		if (!_fallbackState.FallbackProcessed)
+		{
 			//No xi:fallback, fatal error
-			throw new FatalResourceException(e);
+			if (exception == null)
+			{
+				throw new FatalResourceException();
+			}
+			else
+			{
+				throw new FatalResourceException(exception);
+			}
+		}
 		else
 		{
 			//End of xi:include content processing, reset and go forth
@@ -1063,27 +1054,27 @@ public class XIncludingReader : XmlReader
 			switch (_reader.NodeType)
 			{
 				case XmlNodeType.Element:
-					if (IsIncludeElement(_reader))
+					if (IsIncludeElement())
 					{
 						//xi:include child of xi:include - fatal error
-						if (_reader is XmlTextReader)
+						if (_reader is XmlTextReader r)
 						{
-							XmlTextReader r = _reader as XmlTextReader;
-							throw new SyntaxError("xi:include element cannot be child of xi:include element."
+							throw new SyntaxError("xi:include element cannot be child of xi:include element." 
 								+ _reader.BaseURI.ToString() + ", Line " + r.LineNumber + ", Position " + r.LinePosition);
 						}
 						else
+						{
 							throw new SyntaxError("xi:include element cannot be child of xi:include element.");
+						}
 					}
-					if (IsFallbackElement(_reader))
+					if (IsFallbackElement())
 					{
 						//Found xi:fallback
 						if (fallbackElem)
 						{
 							//More than one xi:fallback
-							if (_reader is XmlTextReader)
+							if (_reader is XmlTextReader r)
 							{
-								XmlTextReader r = _reader as XmlTextReader;
 								throw new SyntaxError("xi:include element cannot contain more than one xi:fallback element."
 									+ _reader.BaseURI.ToString() + ", Line " + r.LineNumber + ", Position " + r.LinePosition);
 							}
