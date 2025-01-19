@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project>
+	<PropertyGroup>
+		<Title>DigitalProduction.Xml.XInclude Unit Tests</Title>
+		<Product>DigitalProduction.Xml.XInclude</Product>
+		<Copyright>Lance A. Endres</Copyright>
+		<Company>Digital Production</Company>
+		<Description>Units tests for XML including reader.</Description>
+	</PropertyGroup>
+</Project>

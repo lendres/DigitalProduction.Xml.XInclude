@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<RootNamespace>DigitalProduction.Xml</RootNamespace>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<Company />
+		<PackageProjectUrl>https://github.com/lendres/XInclude-Dot-Net</PackageProjectUrl>
+		<PackageTags>XInclude;XPointer;XML,C#,.Net</PackageTags>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<Authors>Oleg Tkachenko, et al.</Authors>
+	</PropertyGroup>
+
+	<!-- Import version information from the folder containing the project if the file exists -->
+	<Import Project="$(MSBuildProjectDirectory)/Publishing/Assembly.props" Condition="Exists('$(MSBuildProjectDirectory)/Publishing/Assembly.props')" />
+	<Import Project="$(MSBuildProjectDirectory)/Publishing/Version.props" Condition="Exists('$(MSBuildProjectDirectory)/Publishing/Version.props')" />
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>
