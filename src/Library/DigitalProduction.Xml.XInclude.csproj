@@ -8,10 +8,12 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<Company />
-		<PackageProjectUrl>https://github.com/lendres/XInclude-Dot-Net</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/lendres/DigitalProduction.XInclude</PackageProjectUrl>
 		<PackageTags>XInclude;XPointer;XML,C#,.Net</PackageTags>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<Authors>Oleg Tkachenko, et al.</Authors>
+		<Authors>Oleg Tkachenko, Lance A. Endres, et al.</Authors>
+		<Copyright>Oleg Tkachenko, Lance A. Endres, et al.</Copyright>
+		<RepositoryUrl>https://github.com/lendres/DigitalProduction.Xml.XInclude</RepositoryUrl>
 	</PropertyGroup>
 
 	<!-- Import version information from the folder containing the project if the file exists -->
