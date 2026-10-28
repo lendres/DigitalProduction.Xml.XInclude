@@ -16,6 +16,10 @@
 		<RepositoryUrl>https://github.com/lendres/DigitalProduction.Xml.XInclude</RepositoryUrl>
 	</PropertyGroup>
 
+	<Target Name="RunPostBuildEventAfterPack" AfterTargets="Pack" Condition="'$(Configuration)' == 'Release'">
+		<Exec Command="call &quot;$(MSBuildProjectDirectory)\Publishing\copy-nuget.bat&quot; &quot;$(MSBuildProjectDirectory)&quot;" />
+	</Target>
+
 	<!-- Import version information from the folder containing the project if the file exists -->
 	<Import Project="$(MSBuildProjectDirectory)/Publishing/Assembly.props" Condition="Exists('$(MSBuildProjectDirectory)/Publishing/Assembly.props')" />
 	<Import Project="$(MSBuildProjectDirectory)/Publishing/Version.props" Condition="Exists('$(MSBuildProjectDirectory)/Publishing/Version.props')" />
