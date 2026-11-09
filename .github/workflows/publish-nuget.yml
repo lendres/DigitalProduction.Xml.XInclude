@@ -1,0 +1,54 @@
+name: Publish NuGet package
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    if: github.event_name == 'release' || github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Test
+        run: dotnet test "src/Unit Tests/Unit Tests.csproj" --configuration Release -p:SkipLocalNuGetCopy=true
+
+      - name: Pack
+        run: dotnet pack src/Library/DigitalProduction.Xml.XInclude.csproj --configuration Release --output artifacts -p:GeneratePackageOnBuild=false -p:SkipLocalNuGetCopy=true
+
+      - name: Verify the release tag matches the package version
+        if: github.event_name == 'release'
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! -f "artifacts/DigitalProduction.Xml.XInclude.$version.nupkg" ]]; then
+            echo "::error::Release tag $GITHUB_REF_NAME does not match the packed version."
+            exit 1
+          fi
+
+      - name: Log in to NuGet.org
+        if: github.event_name == 'release'
+        id: nuget-login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Push to NuGet.org
+        if: github.event_name == 'release'
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+        run: dotnet nuget push 'artifacts/*.nupkg' --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json
